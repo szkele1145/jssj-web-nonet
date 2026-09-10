@@ -10,37 +10,25 @@
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://jssj.cc.cd/legends.html">
 <meta property="og:image" content="https://jssj.cc.cd/favicon.png">
+<meta name="theme-color" content="#f7f8fa" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#08090b">
+
 <link rel="stylesheet" href="css/fontawesome/all.min.css">
 <link rel="icon" href="favicon.png">
 <link rel="stylesheet" href="css/style.css">
-<script src="offline/offline.js"></script><script>if(localStorage.getItem('theme')==='light')document.documentElement.classList.add('light-mode')</script><script>(function(){try{var v=localStorage.getItem('vid');if(!v){v='v'+Date.now().toString(36)+Math.random().toString(36).slice(2,8);localStorage.setItem('vid',v);}var b=location.hostname==='sh.jssj.cc.cd'?'https://shapi.jssj.cc.cd':'https://api.jssj.cc.cd';fetch(b+'/api/track',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({vid:v,page:location.pathname}),keepalive:true}).catch(function(){});}catch(e){}})();</script>
-<style>
-  .story-card{background:rgba(16,24,32,.2);border:1px solid rgba(160,175,190,.04);border-radius:16px;padding:1.5rem 1.8rem;margin-bottom:1.2rem;transition:.2s}
-  html.light-mode .story-card{background:rgba(220,235,250,.12);border-color:rgba(80,120,160,.04)}
-  .story-card:hover{border-color:rgba(160,175,190,.1)}
-  html.light-mode .story-card:hover{border-color:rgba(80,120,160,.1)}
-  .story-title{font-size:1.15rem;font-weight:450;color:#d0e6f0;margin-bottom:0.4rem}
-  html.light-mode .story-title{color:#1a3a4e}
-  .story-meta{font-size:.8rem;color:rgba(160,175,190,.4);letter-spacing:1px;margin-bottom:.6rem}
-  html.light-mode .story-meta{color:rgba(60,100,130,.4)}
-  .story-content{font-size:.95rem;color:rgba(200,215,230,.6);line-height:1.8}
-  html.light-mode .story-content{color:rgba(30,60,80,.6)}
-  .story-content img{max-width:100%;height:auto;border-radius:10px;margin:0.6rem 0;display:block}
-  .story-content .story-gallery{display:grid;grid-template-columns:repeat(2,1fr);gap:.8rem;margin:.8rem 0}
-  .story-content .story-gallery img{width:100%;height:200px;object-fit:cover;border-radius:10px;margin:0;display:block}
-  .story-content .story-gallery img:only-child{grid-column:1/-1;height:auto;max-height:520px;object-fit:contain}
-  html.light-mode .story-content .story-gallery img{background:rgba(200,215,230,.1)}
-  @media(max-width:640px){.story-content .story-gallery{grid-template-columns:1fr}.story-content .story-gallery img{height:auto;max-height:300px;object-fit:contain}}
-  @media(max-width:420px){.story-card{padding:1rem}.search-bar{padding:.4rem .7rem}}
-  .story-content p{margin:0.4rem 0}
-</style>
+<script src="offline/offline.js"></script><script>(function(){try{var t=localStorage.getItem("theme");var d=document.documentElement;var light=(t==="light")||(!t&&!window.matchMedia("(prefers-color-scheme: dark)").matches);if(light)d.classList.add("light-mode");else if(t==="glass")d.classList.add("glass");d.style.colorScheme=light?"light":"dark";}catch(e){}})();</script>
+<script>(function(){try{var v=localStorage.getItem('vid');if(!v){v='v'+Date.now().toString(36)+Math.random().toString(36).slice(2,8);localStorage.setItem('vid',v);}var b=location.hostname==='sh.jssj.cc.cd'?'https://shapi.jssj.cc.cd':'https://api.jssj.cc.cd';fetch(b+'/api/track',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({vid:v,page:location.pathname}),keepalive:true}).catch(function(){});}catch(e){}})();</script>
 </head>
 <body>
 
+<div class="glass-glow" aria-hidden="true"></div>
 <div class="grid-background"></div>
 
 <nav class="sidebar" id="sidebar">
-  <div class="sidebar-header"><span>📁 目录</span><button class="sidebar-close" id="sidebarClose"><i class="fas fa-times"></i></button></div>
+  <div class="sidebar-header">
+    <span>目录</span>
+    <button class="sidebar-close" id="sidebarClose" type="button" aria-label="关闭目录"><i class="fas fa-times"></i></button>
+  </div>
   <div class="sidebar-menu">
     <a href="index.html"><i class="fas fa-home"></i> 首页</a>
     <a href="server.html"><i class="fas fa-server"></i> 服务器</a>
@@ -55,26 +43,31 @@
     <a href="search.html"><i class="fas fa-search"></i> 搜索</a>
     <a href="about.html"><i class="fas fa-info-circle"></i> 关于</a>
   </div>
-  <div style="margin-top:auto;opacity:.15;font-size:.7rem;padding-top:2rem;letter-spacing:1px;"><i class="fas fa-ellipsis-h"></i> v0.2</div>
+  <div class="sidebar-foot"><i class="fas fa-ellipsis-h"></i> v0.3</div>
 </nav>
+
+<a class="skip-link" href="#main">跳到主要内容</a>
 
 <div class="app">
   <header class="navbar">
-    <div class="navbar-left"><button class="sidebar-toggle" id="sidebarToggle"><i class="fas fa-bars"></i></button><div class="server-name">建设世界</div></div>
-    <div class="navbar-right"><button class="theme-toggle" id="themeToggle"><i class="fas fa-moon" id="themeIcon"></i></button></div>
-  </header>
-
-  <main class="main-content">
+    <div class="navbar-left">
+      <button class="sidebar-toggle" id="sidebarToggle" type="button" aria-label="打开目录" aria-controls="sidebar" aria-expanded="false"><i class="fas fa-bars"></i></button>
+      <a class="server-name" href="index.html">建设世界</a>
+    </div>
+    <div class="navbar-right">
+      <button class="theme-toggle" id="themeToggle" type="button" aria-label="切换主题"><i class="fas fa-moon" id="themeIcon"></i></button>
+    </div>
+  </header><main class="main-content" id="main">
     <div class="page-container">
-      <div style="display:flex;flex-direction:column;flex:1;gap:1.2rem;padding-top:1rem;">
+      <div class="page-stack">
         <div class="server-header">
           <h2><i class="fas fa-crown"></i> 神人榜</h2>
         </div>
-        <div style="display:flex;align-items:center;justify-content:space-between;gap:.6rem;margin-bottom:.8rem;flex-wrap:wrap;">
-          <a href="search.html" style="display:inline-flex;align-items:center;gap:8px;padding:.45rem 1.2rem;border-radius:10px;border:1px solid rgba(90,176,224,.2);background:rgba(90,176,224,.06);color:#7bb3d9;text-decoration:none;font-size:.85rem;letter-spacing:1px;transition:.2s;font-family:inherit;" onmouseover="this.style.background='rgba(90,176,224,.14)'" onmouseout="this.style.background='rgba(90,176,224,.06)'"><i class="fas fa-search"></i> 全站搜索</a>
+        <div>
+          <a href="search.html"><i class="fas fa-search"></i> 全站搜索</a>
         </div>
         <div id="storyContainer">
-          <div class="server-status-card" style="text-align:center;padding:3rem;"><i class="fas fa-spinner fa-pulse" style="font-size:2rem;opacity:0.3;"></i><div style="margin-top:1rem;opacity:0.3;font-size:0.9rem;">加载中...</div></div>
+          <div class="server-status-card"><div class="mc-state state-loading"><span class="spinner" aria-hidden="true"></span><span>加载中…</span></div></div>
         </div>
       </div>
     </div>
@@ -83,93 +76,8 @@
   <div class="footer-copy">© 2077 建设世界. 并不保留所有权利。</div>
 </div>
 
-<script>
-const API_BASE = location.hostname === 'sh.jssj.cc.cd' ? 'https://shapi.jssj.cc.cd' : 'https://api.jssj.cc.cd';
-const SHAPI_BASE = 'https://shapi.jssj.cc.cd';
-async function fetchApi(path, options) {
-  try {
-    const resp = await fetch(API_BASE + path, options);
-    if (!resp.ok) throw new Error('HTTP ' + resp.status);
-    return resp;
-  } catch (e) {
-    if (API_BASE !== SHAPI_BASE) {
-      const fallback = await fetch(SHAPI_BASE + path, options);
-      if (!fallback.ok) throw new Error('HTTP ' + fallback.status);
-      return fallback;
-    }
-    throw e;
-  }
-}
 
-
-let allStories = [];
-
-function esc(s) {
-  return String(s == null ? '' : s)
-    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-}
-
-function renderStories(list) {
-  const container = document.getElementById('storyContainer');
-  if (!list || list.length === 0) {
-    container.innerHTML = '<div class="server-status-card" style="text-align:center;padding:3rem;"><div style="opacity:0.3;">' + (allStories.length > 0 ? '无匹配结果' : '暂无记录') + '</div></div>';
-    return;
-  }
-  container.innerHTML = list.map(s => {
-    let content = s.content || '';
-    if (content.includes('img.remit.ee')) {
-      content = content.replace(/https?:\/\/img\.remit\.ee[^\s<>"]+/g, function(u) {
-        return API_BASE + '/api/img?url=' + encodeURIComponent(u);
-      });
-    }
-    if (content.includes('/api/img')) {
-      content = content.replace(/(src=["'])\/api\/img/g, '$1' + API_BASE + '/api/img');
-    }
-    if (!content.includes('story-gallery')) content = content.replace(/(<img[^>]*>(?:\s*(?:<br\s*\/?>)?\s*<img[^>]*>)*)/gi, function(m) { return '<div class="story-gallery">' + m.replace(/<br\s*\/?>/gi, '') + '</div>'; });
-    content = content.replace(/<img /gi, '<img loading="lazy" ');
-    return '<div class="story-card" id="story-' + esc(s.id) + '"><div class="story-title">' + esc(s.title) + '</div><div class="story-meta">' + esc((s.date || '').split('T')[0]) + '</div><div class="story-content">' + content + '</div></div>';
-  }).join('');
-}
-
-async function loadStories() {
-  const container = document.getElementById('storyContainer');
-  try {
-    const resp = await fetchApi('/api/stories');
-    const data = await resp.json();
-    if (!data.success || !data.stories || data.stories.length === 0) {
-      container.innerHTML = '<div class="server-status-card" style="text-align:center;padding:3rem;"><div style="opacity:0.3;">暂无记录</div></div>';
-      return;
-    }
-    allStories = data.stories.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
-    renderStories(allStories);
-    // 深链接：从搜索结果带 #story-id 跳转时，滚动到对应条目并高亮
-    if (location.hash && location.hash.startsWith('#story-')) {
-      setTimeout(() => {
-        const el = document.getElementById(location.hash.slice(1));
-        if (el) {
-          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          el.style.outline = '2px solid rgba(90,176,224,.55)';
-          el.style.outlineOffset = '2px';
-          setTimeout(() => { el.style.outline = 'none'; }, 3000);
-        }
-      }, 150);
-    }
-  } catch {
-    container.innerHTML = '<div class="server-status-card" style="text-align:center;padding:3rem;"><div style="opacity:0.3;">加载失败</div></div>';
-  }
-}
-
-loadStories();
-
-const sidebar=document.getElementById('sidebar'),st=document.getElementById('sidebarToggle'),sc=document.getElementById('sidebarClose'),tt=document.getElementById('themeToggle'),ti=document.getElementById('themeIcon'),bd=document.body;
-function openSidebar(){sidebar.classList.add('open')}
-function closeSidebar(){sidebar.classList.remove('open')}
-st.addEventListener('click',openSidebar);sc.addEventListener('click',closeSidebar);
-document.addEventListener('click',function(e){if(sidebar.classList.contains('open')&&!sidebar.contains(e.target)&&e.target!==st&&!st.contains(e.target))closeSidebar()});
-sidebar.addEventListener('click',function(e){e.stopPropagation()});
-var savedTheme=localStorage.getItem('theme');if(savedTheme==='light'){bd.classList.add('light-mode');ti.className='fas fa-sun'}else if(!savedTheme&&!window.matchMedia('(prefers-color-scheme:dark)').matches){bd.classList.add('light-mode');ti.className='fas fa-sun';localStorage.setItem('theme','light')}
-tt.addEventListener('click',function(){bd.classList.toggle('light-mode');document.documentElement.classList.toggle('light-mode');var isLight=bd.classList.contains('light-mode');localStorage.setItem('theme',isLight?'light':'dark');ti.className=isLight?'fas fa-sun':'fas fa-moon'});
-</script>
+<script src="js/legends.js"></script>
+<script src="js/ui.js"></script>
 </body>
 </html>

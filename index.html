@@ -10,43 +10,24 @@
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://jssj.cc.cd/index.html">
 <meta property="og:image" content="https://jssj.cc.cd/favicon.png">
+<meta name="theme-color" content="#f7f8fa" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#08090b">
+
 <link rel="stylesheet" href="css/fontawesome/all.min.css">
 <link rel="icon" href="favicon.png">
 <link rel="stylesheet" href="css/style.css">
-<script src="offline/offline.js"></script><script>if(localStorage.getItem('theme')==='light')document.documentElement.classList.add('light-mode')</script><script>(function(){try{var v=localStorage.getItem('vid');if(!v){v='v'+Date.now().toString(36)+Math.random().toString(36).slice(2,8);localStorage.setItem('vid',v);}var b=location.hostname==='sh.jssj.cc.cd'?'https://shapi.jssj.cc.cd':'https://api.jssj.cc.cd';fetch(b+'/api/track',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({vid:v,page:location.pathname}),keepalive:true}).catch(function(){});}catch(e){}})();</script>
-<style>
-  #homePage .home-btn{display:inline-flex;align-items:center;gap:8px;padding:.65rem 1.8rem;font-size:.9rem;font-weight:400;letter-spacing:1.5px;border-radius:10px;border:1px solid rgba(160,175,190,.12);background:rgba(200,215,230,.02);color:rgba(160,175,190,.7);text-decoration:none;transition:.2s;font-family:inherit}
-  #homePage .home-btn:hover{border-color:rgba(160,175,190,.25);color:#eef2f5;background:rgba(200,215,230,.04)}
-  html.light-mode #homePage .home-btn{color:rgba(60,100,130,.6);background:rgba(200,215,230,.04)}
-  html.light-mode #homePage .home-btn:hover{border-color:rgba(60,100,130,.25);color:#1a3a4e;background:rgba(200,215,230,.08)}
-  #homePage .home-btn.primary{border-color:rgba(90,176,224,.2);color:#7bb3d9}
-  #homePage .home-btn.primary:hover{border-color:#5ab0e0;color:#c0e8ff;background:rgba(90,176,224,.04)}
-  html.light-mode #homePage .home-btn.primary{color:#2f7a9a;border-color:rgba(30,120,180,.15)}
-  html.light-mode #homePage .home-btn.primary:hover{border-color:#1f7a9a;color:#0a3a5a;background:rgba(30,120,180,.04)}
-  #homePage .home-btn i{font-size:1rem;opacity:.7}
-  #homePage .uptime{margin-bottom:0}
-  .site-stats{margin-top:.6rem;font-size:.85rem;font-weight:300;color:rgba(160,175,190,.35);letter-spacing:1px}
-  .site-stats span{color:#5ab0e0;font-weight:450;opacity:.9}
-  html.light-mode .site-stats{color:rgba(60,100,130,.3)}
-  html.light-mode .site-stats span{color:#1f7a9a}
-  .version-info{margin-top:.8rem;font-size:.82rem;font-weight:300;color:rgba(160,175,190,.25);letter-spacing:1.5px}
-  html.light-mode .version-info{color:rgba(60,100,130,.25)}
-  .home-actions{display:flex;align-items:center;gap:.8rem;margin-top:2.8rem;flex-wrap:wrap;justify-content:center}
-  #homePage .home-btn.bili{border-color:rgba(251,114,153,.2);color:#fb7299}
-  #homePage .home-btn.bili:hover{border-color:#fb7299;color:#fb7299;background:rgba(251,114,153,.04)}
-  html.light-mode #homePage .home-btn.bili{color:#e06080;border-color:rgba(224,96,128,.15)}
-  html.light-mode #homePage .home-btn.bili:hover{border-color:#e06080;color:#e04060;background:rgba(224,96,128,.04)}
-  @media(max-width:480px){.home-actions{flex-direction:column;width:100%}#homePage .home-btn{width:100%;justify-content:center;padding:.55rem 1.2rem;font-size:.85rem}}
-</style>
+<script src="offline/offline.js"></script><script>(function(){try{var t=localStorage.getItem("theme");var d=document.documentElement;var light=(t==="light")||(!t&&!window.matchMedia("(prefers-color-scheme: dark)").matches);if(light)d.classList.add("light-mode");else if(t==="glass")d.classList.add("glass");d.style.colorScheme=light?"light":"dark";}catch(e){}})();</script>
+<script>(function(){try{var v=localStorage.getItem('vid');if(!v){v='v'+Date.now().toString(36)+Math.random().toString(36).slice(2,8);localStorage.setItem('vid',v);}var b=location.hostname==='sh.jssj.cc.cd'?'https://shapi.jssj.cc.cd':'https://api.jssj.cc.cd';fetch(b+'/api/track',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({vid:v,page:location.pathname}),keepalive:true}).catch(function(){});}catch(e){}})();</script>
 </head>
 <body>
 
+<div class="glass-glow" aria-hidden="true"></div>
 <div class="grid-background"></div>
 
 <nav class="sidebar" id="sidebar">
   <div class="sidebar-header">
-    <span>📁 目录</span>
-    <button class="sidebar-close" id="sidebarClose"><i class="fas fa-times"></i></button>
+    <span>目录</span>
+    <button class="sidebar-close" id="sidebarClose" type="button" aria-label="关闭目录"><i class="fas fa-times"></i></button>
   </div>
   <div class="sidebar-menu">
     <a href="index.html"><i class="fas fa-home"></i> 首页</a>
@@ -62,21 +43,21 @@
     <a href="search.html"><i class="fas fa-search"></i> 搜索</a>
     <a href="about.html"><i class="fas fa-info-circle"></i> 关于</a>
   </div>
-  <div style="margin-top:auto;opacity:.15;font-size:.7rem;padding-top:2rem;letter-spacing:1px;"><i class="fas fa-ellipsis-h"></i> v0.2</div>
+  <div class="sidebar-foot"><i class="fas fa-ellipsis-h"></i> v0.3</div>
 </nav>
+
+<a class="skip-link" href="#main">跳到主要内容</a>
 
 <div class="app">
   <header class="navbar">
     <div class="navbar-left">
-      <button class="sidebar-toggle" id="sidebarToggle"><i class="fas fa-bars"></i></button>
-      <div class="server-name">建设世界</div>
+      <button class="sidebar-toggle" id="sidebarToggle" type="button" aria-label="打开目录" aria-controls="sidebar" aria-expanded="false"><i class="fas fa-bars"></i></button>
+      <a class="server-name" href="index.html">建设世界</a>
     </div>
     <div class="navbar-right">
-      <button class="theme-toggle" id="themeToggle"><i class="fas fa-moon" id="themeIcon"></i></button>
+      <button class="theme-toggle" id="themeToggle" type="button" aria-label="切换主题"><i class="fas fa-moon" id="themeIcon"></i></button>
     </div>
-  </header>
-
-  <main class="main-content">
+  </header><main class="main-content" id="main">
     <div class="page-container">
       <div id="homePage">
         <div class="server-status">
@@ -97,17 +78,7 @@
 </div>
 
 <script src="js/home.js"></script>
-<script>
-// Sidebar & theme
-const sidebar=document.getElementById('sidebar'),st=document.getElementById('sidebarToggle'),sc=document.getElementById('sidebarClose'),tt=document.getElementById('themeToggle'),ti=document.getElementById('themeIcon'),bd=document.body;
-function openSidebar(){sidebar.classList.add('open')}
-function closeSidebar(){sidebar.classList.remove('open')}
-st.addEventListener('click',openSidebar);
-sc.addEventListener('click',closeSidebar);
-document.addEventListener('click',function(e){if(sidebar.classList.contains('open')&&!sidebar.contains(e.target)&&e.target!==st&&!st.contains(e.target))closeSidebar()});
-sidebar.addEventListener('click',function(e){e.stopPropagation()});
-var savedTheme=localStorage.getItem('theme');if(savedTheme==='light'){bd.classList.add('light-mode');ti.className='fas fa-sun'}else if(!savedTheme&&!window.matchMedia('(prefers-color-scheme:dark)').matches){bd.classList.add('light-mode');ti.className='fas fa-sun';localStorage.setItem('theme','light')}
-tt.addEventListener('click',function(){bd.classList.toggle('light-mode');document.documentElement.classList.toggle('light-mode');var isLight=bd.classList.contains('light-mode');localStorage.setItem('theme',isLight?'light':'dark');ti.className=isLight?'fas fa-sun':'fas fa-moon'});
-</script>
+
+<script src="js/ui.js"></script>
 </body>
 </html>

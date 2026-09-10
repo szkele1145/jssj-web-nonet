@@ -72,7 +72,11 @@ const checks = [
   ['forum.dom.html', '捐赠资金流向', '动态页渲染出全部帖子'],
   ['forum.dom.html', 'assets/0\\d_', '动态图片已改走本地 assets/'],
   ['votes.dom.html', '关于用户女装的决定投票', '投票页渲染出投票'],
-  ['votes.dom.html', '截止', '投票截止信息正常'],
+  // 注：库里这几张投票都已截止，走的是历史卡片分支（renderAgreeCard /
+  // renderChoiceCard），这两个渲染函数本身就不输出 deadline（原站代码如此），
+  // 所以这里断言日期与票数，而不是「截止」。
+  ['votes.dom.html', '2026-07-23', '投票日期已渲染'],
+  ['votes.dom.html', '\\d+ 票', '得票数已渲染'],
   ['legends.dom.html', 'story-gallery', '神人榜渲染出图片画廊'],
   ['legends.dom.html', 'assets/1\\d_', '神人榜图片本地化'],
   ['bans.dom.html', '封挂榜', '封挂榜页面渲染'],

@@ -37,11 +37,13 @@ const PATCHES = {
     [
       '<div class="form-group"><label>上传文件（直接传到服务器，推荐）</label><input type="file" id="downloadFile"></div>',
       '<div class="form-group"><label>上传文件（直接传到服务器，推荐）</label><input type="file" id="downloadFile"></div>\n' +
-      '<div style="font-size:.8rem;color:rgba(224,176,90,.75);line-height:1.7;margin:-.3rem 0 .6rem;">离线版提示：这个站点没有后端，无法上传文件。请在「或填外部下载链接」里填 GitHub Release 地址（大文件走 Release）。</div>',
+      '<div class="note warn" style="margin:-.3rem 0 .6rem;">离线版提示：这个站点没有后端，无法上传文件。请在「或填外部下载链接」里填 GitHub Release 地址（大文件走 Release）。</div>',
     ],
   ],
-  'download.html': [
-    // 下载项 URL 已指向 GitHub Release，绝对地址不要再拼 ?fn=（会破坏 Release 的签名跳转）
+  'js/download.js': [
+    // 离线层已把 d.url 改写成 GitHub Release 的绝对地址（见 offline-core.js 的 dlUrl）。
+    // Release 的下载链接带签名，再拼 ?fn= 会破坏跳转，所以只对「服务器相对路径」拼 ?fn=。
+    // 注意：这段代码在 2026-09 的 UI 重做中被移出 download.html，现在是独立文件。
     [
       "      const full = d.url && d.url.startsWith('/') ? API_BASE + d.url : d.url;\n" +
       "      const href = full + (d.filename ? (full.indexOf('?') >= 0 ? '&' : '?') + 'fn=' + encodeURIComponent(d.filename) : '');",
@@ -49,11 +51,13 @@ const PATCHES = {
       "      const needsFn = d.filename && d.url && d.url.startsWith('/');\n" +
       "      const href = full + (needsFn ? (full.indexOf('?') >= 0 ? '&' : '?') + 'fn=' + encodeURIComponent(d.filename) : '');",
     ],
+  ],
+  // 页面级补丁：在页头标题下面加一行离线版说明（锚点跟着 2026-09 的新标记走）
+  'download.html': [
     [
-      '<h2><i class="fas fa-download" style="color:#5ad0a0;"></i> 下载中心</h2>',
-      '<h2><i class="fas fa-download" style="color:#5ad0a0;"></i> 下载中心</h2>' +
-      '<div style="font-size:.78rem;color:rgba(160,175,190,.45);margin-top:.4rem;line-height:1.7;">' +
-      '离线静态版：站点本身不含大文件，整合包托管在 GitHub Release，点击即可下载。</div>',
+      '<h2><i class="fas fa-download"></i> 下载中心</h2>',
+      '<h2><i class="fas fa-download"></i> 下载中心</h2>' +
+      '<div class="page-sub">离线静态版：站点本身不含大文件，整合包托管在 GitHub Release，点击即可下载。</div>',
     ],
   ],
 };
@@ -136,6 +140,13 @@ function copyDir(from, to) {
 }
 
 // 原站文件行尾有 CRLF 也有 LF，补丁锚点按目标文件的行尾自动适配
+//
+// ⚠️ 补丁必须「要么全部命中，要么报错退出」。
+// 早先的实现只 console.log 一行提醒就 continue，于是原站改了标记之后
+// 离线站会静默带着「没打上补丁」的状态发出去（例如下载链接缺少离线改写），
+// 而构建日志末尾依然是绿色的汇总 —— 这个坑真实踩过一次，所以改为硬失败。
+const patchFailures = [];   // 收集所有未命中的锚点，构建结束统一炸
+
 function applyPatches(text, patches, label) {
   const eol = text.indexOf('\r\n') !== -1 ? '\r\n' : '\n';
   let applied = 0;
@@ -143,13 +154,30 @@ function applyPatches(text, patches, label) {
     const f = from.replace(/\r?\n/g, eol);
     const t = to.replace(/\r?\n/g, eol);
     if (text.indexOf(f) === -1) {
-      console.log('  ! ' + label + ' 未找到补丁锚点：' + from.split('\n')[0].slice(0, 56));
+      const hint = from.split('\n')[0].slice(0, 64);
+      console.log('  ✗ ' + label + ' 未找到补丁锚点：' + hint);
+      patchFailures.push({ label, hint });
       continue;
     }
     text = text.split(f).join(t);
     applied++;
   }
-  return { text, applied };
+  if (patches.length && applied !== patches.length) {
+    console.log('  ! ' + label + '：' + applied + '/' + patches.length + ' 处补丁命中');
+  }
+  return { text, applied, total: patches.length };
+}
+
+// 校验补丁全部命中，否则以非 0 退出码结束构建（避免「静默降级」）
+function assertPatchesOk() {
+  if (!patchFailures.length) return;
+  console.error('\n' + '='.repeat(64));
+  console.error('构建失败：有 ' + patchFailures.length + ' 处补丁锚点未命中。');
+  console.error('原站的标记变了，补丁没打上 —— 离线站会缺少对应适配，因此中止。');
+  console.error('请对照下面这些锚点，更新本文件顶部的 PATCHES / SERVER_JS_PATCH 后重跑：');
+  for (const f of patchFailures) console.error('  - [' + f.label + '] ' + f.hint);
+  console.error('='.repeat(64) + '\n');
+  process.exit(1);
 }
 
 async function main() {
@@ -195,6 +223,17 @@ async function main() {
   copyDir(path.join(SRC, 'js'), path.join(OUT, 'js'));
   fs.copyFileSync(path.join(SRC, 'favicon.png'), path.join(OUT, 'favicon.png'));
   console.log('  ✓ css/ js/ favicon.png');
+
+  // (3b) js/ 里的补丁必须在复制之后打（2026-09 起下载逻辑已从页面移到 js/download.js）
+  for (const rel of Object.keys(PATCHES)) {
+    if (!rel.startsWith('js/')) continue;
+    const target = path.join(OUT, rel);
+    if (!fs.existsSync(target)) { console.log('  ✗ 缺少 ' + rel); patchFailures.push({ label: rel, hint: '文件不存在' }); continue; }
+    let src = fs.readFileSync(target, 'utf8');
+    const pr = applyPatches(src, PATCHES[rel], rel);
+    fs.writeFileSync(target, pr.text);
+    console.log('  ✓ ' + rel + ' 打补丁 ' + pr.applied + '/' + pr.total);
+  }
 
   console.log('=== 4. 打补丁 js/server.js ===');
   const sj = path.join(OUT, 'js/server.js');
@@ -294,6 +333,9 @@ async function main() {
   files.sort((a, b) => b[1] - a[1]).slice(0, 8).forEach(([f, s]) => console.log('    ' + (s / 1024).toFixed(0).padStart(6) + ' KB  ' + f));
   const oversize = files.filter(([, s]) => s > 90 * 1024 * 1024);
   if (oversize.length) console.log('  ⚠ 有文件超过 GitHub Pages 单文件 100MB 上限：' + oversize.map(f => f[0]).join(', '));
+
+  // 补丁没全命中就中止：宁可不产出，也不要发一个静默缺功能的离线站
+  assertPatchesOk();
 }
 
 main().catch(e => { console.error('构建失败: ' + (e && e.stack || e)); process.exit(1); });

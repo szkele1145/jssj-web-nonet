@@ -4,357 +4,72 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>建设世界 · 管理后台</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #0b0d10;
-      color: #eef2f5;
-      min-height: 100vh;
-      padding: 2rem;
-    }
-    .container {
-      max-width: 1000px;
-      margin: 0 auto;
-    }
-    h1 {
-      font-size: 2rem;
-      font-weight: 500;
-      letter-spacing: 2px;
-      margin-bottom: 0.5rem;
-      background: linear-gradient(135deg, #d0e8f5, #7bb3d9);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    .subtitle {
-      color: rgba(160, 175, 190, 0.5);
-      margin-bottom: 2rem;
-      font-size: 0.9rem;
-    }
-    .badge-online {
-      display: inline-block;
-      background: rgba(90, 176, 224, 0.15);
-      border: 1px solid rgba(90, 176, 224, 0.2);
-      color: #5ab0e0;
-      font-size: 0.7rem;
-      padding: 0.1rem 0.8rem;
-      border-radius: 20px;
-      margin-left: 0.8rem;
-      letter-spacing: 0.5px;
-      vertical-align: middle;
-    }
-    .card {
-      background: rgba(16, 24, 32, 0.4);
-      border: 1px solid rgba(160, 175, 190, 0.08);
-      border-radius: 16px;
-      padding: 1.8rem;
-      margin-bottom: 2rem;
-      backdrop-filter: blur(4px);
-    }
-    .card h2 {
-      font-size: 1.2rem;
-      font-weight: 400;
-      letter-spacing: 1px;
-      color: #b8d0dd;
-      margin-bottom: 1.2rem;
-    }
-    .form-group {
-      margin-bottom: 1rem;
-    }
-    .form-group label {
-      display: block;
-      font-size: 0.85rem;
-      color: rgba(160, 175, 190, 0.6);
-      margin-bottom: 0.3rem;
-      letter-spacing: 0.5px;
-    }
-    .form-group input,
-    .form-group textarea,
-    .form-group select {
-      width: 100%;
-      padding: 0.7rem 1rem;
-      background: rgba(20, 30, 40, 0.4);
-      border: 1px solid rgba(160, 175, 190, 0.1);
-      border-radius: 10px;
-      color: #eef2f5;
-      font-size: 0.95rem;
-      font-family: inherit;
-      transition: 0.2s;
-    }
-    .form-group input:focus,
-    .form-group textarea:focus,
-    .form-group select:focus {
-      outline: none;
-      border-color: #5ab0e0;
-      box-shadow: 0 0 20px rgba(90, 176, 224, 0.05);
-    }
-    .form-group textarea {
-      min-height: 100px;
-      resize: vertical;
-    }
-    .form-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
-    }
-    .btn {
-      padding: 0.7rem 2rem;
-      border: none;
-      border-radius: 10px;
-      font-size: 0.95rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: 0.2s;
-      font-family: inherit;
-      letter-spacing: 0.5px;
-    }
-    .btn-primary {
-      background: linear-gradient(135deg, #5ab0e0, #3a8aba);
-      color: #fff;
-    }
-    .btn-primary:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 4px 20px rgba(90, 176, 224, 0.2);
-    }
-    .btn-primary:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-      transform: none;
-    }
-    .btn-danger {
-      background: rgba(200, 60, 60, 0.2);
-      color: #e06060;
-      border: 1px solid rgba(200, 60, 60, 0.15);
-    }
-    .btn-danger:hover {
-      background: rgba(200, 60, 60, 0.3);
-    }
-    .post-list {
-      display: flex;
-      flex-direction: column;
-      gap: 0.8rem;
-    }
-    .post-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0.8rem 1.2rem;
-      background: rgba(20, 30, 40, 0.3);
-      border: 1px solid rgba(160, 175, 190, 0.04);
-      border-radius: 10px;
-      transition: 0.2s;
-    }
-    .post-item:hover {
-      border-color: rgba(160, 175, 190, 0.08);
-    }
-    .post-item .info {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      flex-wrap: wrap;
-    }
-    .post-item .info .title {
-      font-weight: 450;
-      color: #d0e6f0;
-    }
-    .post-item .info .meta {
-      font-size: 0.8rem;
-      color: rgba(160, 175, 190, 0.4);
-    }
-    .post-item .info .pin-badge {
-      font-size: 0.65rem;
-      background: rgba(90, 176, 224, 0.12);
-      border: 1px solid rgba(90, 176, 224, 0.15);
-      color: #5ab0e0;
-      padding: 0.05rem 0.6rem;
-      border-radius: 12px;
-    }
-    .post-item .actions {
-      display: flex;
-      gap: 0.5rem;
-    }
-    .post-item .actions .btn {
-      padding: 0.3rem 0.8rem;
-      font-size: 0.8rem;
-    }
-    .empty-state {
-      text-align: center;
-      color: rgba(160, 175, 190, 0.2);
-      padding: 2rem 0;
-      font-size: 0.9rem;
-      letter-spacing: 1px;
-    }
-    .toast {
-      position: fixed;
-      bottom: 2rem;
-      right: 2rem;
-      padding: 0.8rem 1.5rem;
-      border-radius: 12px;
-      background: rgba(16, 24, 32, 0.95);
-      border: 1px solid rgba(160, 175, 190, 0.1);
-      color: #eef2f5;
-      font-size: 0.9rem;
-      backdrop-filter: blur(10px);
-      transform: translateY(100px);
-      opacity: 0;
-      transition: 0.3s ease;
-      z-index: 100;
-    }
-    .toast.show {
-      transform: translateY(0);
-      opacity: 1;
-    }
-    .toast.success {
-      border-color: rgba(90, 176, 224, 0.3);
-    }
-    .toast.error {
-      border-color: rgba(200, 60, 60, 0.3);
-    }
-
-    #authOverlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.8);
-      backdrop-filter: blur(10px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 9999;
-    }
-    #authOverlay.hidden {
-      display: none;
-    }
-    .auth-box {
-      background: rgba(16, 24, 32, 0.95);
-      border: 1px solid rgba(160, 175, 190, 0.1);
-      border-radius: 20px;
-      padding: 2.5rem 3rem;
-      max-width: 400px;
-      width: 90%;
-      text-align: center;
-    }
-    .auth-box .lock-icon {
-      font-size: 3rem;
-      color: #5ab0e0;
-      margin-bottom: 1rem;
-    }
-    .auth-box h2 {
-      font-size: 1.4rem;
-      font-weight: 400;
-      letter-spacing: 2px;
-      color: #b8d0dd;
-      margin-bottom: 0.5rem;
-    }
-    .auth-box p {
-      color: rgba(160, 175, 190, 0.4);
-      font-size: 0.9rem;
-      margin-bottom: 1.5rem;
-    }
-    .auth-box input {
-      width: 100%;
-      padding: 0.8rem 1rem;
-      background: rgba(20, 30, 40, 0.4);
-      border: 1px solid rgba(160, 175, 190, 0.1);
-      border-radius: 10px;
-      color: #eef2f5;
-      font-size: 1rem;
-      font-family: inherit;
-      margin-bottom: 1rem;
-      text-align: center;
-      letter-spacing: 4px;
-    }
-    .auth-box input:focus {
-      outline: none;
-      border-color: #5ab0e0;
-    }
-    .auth-box .auth-error {
-      color: #e06060;
-      font-size: 0.85rem;
-      margin-bottom: 0.8rem;
-      min-height: 1.5rem;
-    }
-    .auth-box .btn {
-      width: 100%;
-      padding: 0.8rem;
-      font-size: 1rem;
-    }
-
-    @media (max-width: 640px) {
-      body {
-        padding: 1rem;
-      }
-      .form-row {
-        grid-template-columns: 1fr;
-      }
-      .post-item {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.5rem;
-      }
-      .post-item .actions {
-        width: 100%;
-        justify-content: flex-end;
-      }
-      .auth-box {
-        padding: 2rem 1.5rem;
-      }
-    }
-  </style>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#f7f8fa" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#08090b">
+  <link rel="stylesheet" href="css/fontawesome/all.min.css">
+  <link rel="icon" href="favicon.png">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="offline/offline.js"></script><script>(function(){try{var t=localStorage.getItem("theme");var d=document.documentElement;var light=(t==="light")||(!t&&!window.matchMedia("(prefers-color-scheme: dark)").matches);if(light)d.classList.add("light-mode");else if(t==="glass")d.classList.add("glass");d.style.colorScheme=light?"light":"dark";}catch(e){}})();</script>
 </head>
 <body>
-<script src="offline/offline.js"></script><script>history.scrollRestoration='manual';window.scrollTo(0,0);</script>
+<div class="glass-glow" aria-hidden="true"></div>
+<script>history.scrollRestoration='manual';window.scrollTo(0,0);</script>
 
+  <a class="skip-link" href="#mainContent">跳到主要内容</a>
 
-  <div id="authOverlay">
+  <!-- 登录 -->
+  <div id="authOverlay" role="dialog" aria-modal="true" aria-label="管理员登录">
     <div class="auth-box">
-      <div class="lock-icon">🔐</div>
+      <div class="lock-icon" aria-hidden="true"><i class="fas fa-lock"></i></div>
       <h2>管理后台</h2>
       <p>请输入管理员密钥以继续</p>
-      <input type="password" id="authInput" placeholder="输入密码">
-      <div class="auth-error" id="authError"></div>
-      <button class="btn btn-primary" id="authBtn">验证身份</button>
+      <label class="sr-only" for="authInput">管理员密钥</label>
+      <input type="password" id="authInput" placeholder="输入密码" autocomplete="current-password">
+      <div class="auth-error" id="authError" role="alert"></div>
+      <button class="btn btn-primary" id="authBtn" type="button">验证身份</button>
     </div>
   </div>
 
-  <div id="mainContent" style="display: none;">
+  <div id="mainContent" hidden>
     <div class="container">
-      <h1>
-        ⚙️ 建设世界 · 管理后台
-        <span class="badge-online">🌐 在线模式</span>
-        <button onclick="logout()" style="float:right;background:rgba(200,60,60,.15);border:1px solid rgba(200,60,60,.2);color:#e06060;padding:0.3rem 1rem;border-radius:8px;cursor:pointer;font-size:0.8rem;font-family:inherit;">退出登录</button>
-      </h1>
-      <div class="subtitle" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;">
-        <span>管理动态 · 投票 · 神人榜</span>
-        <span style="display:flex;gap:0.5rem;">
-          <button class="btn btn-primary" style="padding:0.4rem 1.2rem;font-size:0.85rem;background:rgba(90,176,224,.1);border:1px solid rgba(90,176,224,.15);color:#5ab0e0;border-radius:8px;" onclick="exportAll()">📦 导出全部数据</button>
-          <button class="btn btn-primary" style="padding:0.4rem 1.2rem;font-size:0.85rem;background:rgba(90,208,160,.1);border:1px solid rgba(90,208,160,.15);color:#5ad0a0;border-radius:8px;" onclick="document.getElementById('importFile').click()">📥 导入数据</button>
-          <input type="file" id="importFile" accept=".json,application/json" style="display:none;" onchange="importData(this)">
-        </span>
+
+      <div class="admin-head">
+        <div class="admin-title">
+          <span aria-hidden="true">⚙️</span> 建设世界 · 管理后台
+          <span class="badge-online"><i class="fas fa-circle" aria-hidden="true"></i> 在线模式</span>
+        </div>
+        <div class="navbar-right">
+          <button class="theme-toggle" id="themeToggle" type="button" aria-label="切换主题"><i class="fas fa-moon" id="themeIcon"></i></button>
+          <button class="btn btn-danger btn-sm" type="button" onclick="logout()"><i class="fas fa-right-from-bracket" aria-hidden="true"></i> 退出登录</button>
+        </div>
       </div>
 
-      <div style="display:flex;gap:0.5rem;margin-bottom:1.5rem;flex-wrap:wrap;">
-        <button class="tab-btn active" data-tab="posts" onclick="switchTab('posts')" style="flex:1;min-width:80px;padding:0.5rem 1rem;border-radius:10px;border:1px solid rgba(160,175,190,.1);background:rgba(90,176,224,.1);color:#7bb3d9;cursor:pointer;font-family:inherit;font-size:0.85rem;letter-spacing:1px;transition:.2s;">📋 动态</button>
-        <button class="tab-btn" data-tab="votes" onclick="switchTab('votes')" style="flex:1;min-width:80px;padding:0.5rem 1rem;border-radius:10px;border:1px solid rgba(160,175,190,.08);background:transparent;color:rgba(160,175,190,.5);cursor:pointer;font-family:inherit;font-size:0.85rem;letter-spacing:1px;transition:.2s;">📊 投票</button>
-        <button class="tab-btn" data-tab="stories" onclick="switchTab('stories')" style="flex:1;min-width:80px;padding:0.5rem 1rem;border-radius:10px;border:1px solid rgba(160,175,190,.08);background:transparent;color:rgba(160,175,190,.5);cursor:pointer;font-family:inherit;font-size:0.85rem;letter-spacing:1px;transition:.2s;">👑 神人榜</button>
-        <button class="tab-btn" data-tab="bans" onclick="switchTab('bans')" style="flex:1;min-width:80px;padding:0.5rem 1rem;border-radius:10px;border:1px solid rgba(160,175,190,.08);background:transparent;color:rgba(160,175,190,.5);cursor:pointer;font-family:inherit;font-size:0.85rem;letter-spacing:1px;transition:.2s;">🚫 封挂榜</button>
-        <button class="tab-btn" data-tab="donors" onclick="switchTab('donors')" style="flex:1;min-width:80px;padding:0.5rem 1rem;border-radius:10px;border:1px solid rgba(160,175,190,.08);background:transparent;color:rgba(160,175,190,.5);cursor:pointer;font-family:inherit;font-size:0.85rem;letter-spacing:1px;transition:.2s;">💝 捐赠名单</button>
-        <button class="tab-btn" data-tab="downloads" onclick="switchTab('downloads')" style="flex:1;min-width:80px;padding:0.5rem 1rem;border-radius:10px;border:1px solid rgba(160,175,190,.08);background:transparent;color:rgba(160,175,190,.5);cursor:pointer;font-family:inherit;font-size:0.85rem;letter-spacing:1px;transition:.2s;">📥 下载</button>
-        <button class="tab-btn" data-tab="images" onclick="switchTab('images')" style="flex:1;min-width:80px;padding:0.5rem 1rem;border-radius:10px;border:1px solid rgba(160,175,190,.08);background:transparent;color:rgba(160,175,190,.5);cursor:pointer;font-family:inherit;font-size:0.85rem;letter-spacing:1px;transition:.2s;">🖼️ 图床</button>
-        <button class="tab-btn" data-tab="stats" onclick="switchTab('stats')" style="flex:1;min-width:80px;padding:0.5rem 1rem;border-radius:10px;border:1px solid rgba(160,175,190,.08);background:transparent;color:rgba(160,175,190,.5);cursor:pointer;font-family:inherit;font-size:0.85rem;letter-spacing:1px;transition:.2s;">📊 流量</button>
-        <button class="tab-btn" data-tab="backups" onclick="switchTab('backups')" style="flex:1;min-width:80px;padding:0.5rem 1rem;border-radius:10px;border:1px solid rgba(160,175,190,.08);background:transparent;color:rgba(160,175,190,.5);cursor:pointer;font-family:inherit;font-size:0.85rem;letter-spacing:1px;transition:.2s;">💾 备份</button>
-        <button class="tab-btn" data-tab="oplog" onclick="switchTab('oplog')" style="flex:1;min-width:80px;padding:0.5rem 1rem;border-radius:10px;border:1px solid rgba(160,175,190,.08);background:transparent;color:rgba(160,175,190,.5);cursor:pointer;font-family:inherit;font-size:0.85rem;letter-spacing:1px;transition:.2s;">📜 日志</button>
+      <div class="admin-sub">
+        <span>管理动态 · 投票 · 神人榜 · 封挂榜 · 捐赠 · 下载 · 图床 · 流量 · 备份 · 日志</span>
+        <div class="admin-sub-actions">
+          <button class="btn btn-sm" type="button" onclick="exportAll()"><i class="fas fa-box-archive" aria-hidden="true"></i> 导出全部数据</button>
+          <button class="btn btn-sm" type="button" onclick="document.getElementById('importFile').click()"><i class="fas fa-file-import" aria-hidden="true"></i> 导入数据</button>
+          <input type="file" id="importFile" accept=".json,application/json" hidden onchange="importData(this)">
+          <a class="btn btn-sm btn-ghost" href="index.html" target="_blank" rel="noopener"><i class="fas fa-external-link-alt" aria-hidden="true"></i> 打开前台</a>
+        </div>
       </div>
 
-      <!-- 动态 -->
+      <div class="tabs" role="tablist" aria-label="后台功能分区">
+        <button class="tab-btn active" type="button" role="tab" aria-selected="true"  data-tab="posts"     onclick="switchTab('posts')">📋 动态</button>
+        <button class="tab-btn" type="button" role="tab" aria-selected="false" data-tab="votes"     onclick="switchTab('votes')">📊 投票</button>
+        <button class="tab-btn" type="button" role="tab" aria-selected="false" data-tab="stories"   onclick="switchTab('stories')">👑 神人榜</button>
+        <button class="tab-btn" type="button" role="tab" aria-selected="false" data-tab="bans"      onclick="switchTab('bans')">🚫 封挂榜</button>
+        <button class="tab-btn" type="button" role="tab" aria-selected="false" data-tab="donors"    onclick="switchTab('donors')">💝 捐赠名单</button>
+        <button class="tab-btn" type="button" role="tab" aria-selected="false" data-tab="downloads" onclick="switchTab('downloads')">📥 下载</button>
+        <button class="tab-btn" type="button" role="tab" aria-selected="false" data-tab="images"    onclick="switchTab('images')">🖼️ 图床</button>
+        <button class="tab-btn" type="button" role="tab" aria-selected="false" data-tab="stats"     onclick="switchTab('stats')">📊 流量</button>
+        <button class="tab-btn" type="button" role="tab" aria-selected="false" data-tab="backups"   onclick="switchTab('backups')">💾 备份</button>
+        <button class="tab-btn" type="button" role="tab" aria-selected="false" data-tab="oplog"     onclick="switchTab('oplog')">📜 日志</button>
+      </div>
+<!-- 动态 -->
       <div class="tab-content" id="tab-posts">
-        <div class="card"><h2>📋 所有动态</h2><div id="postList" class="post-list"><div class="empty-state">加载中...</div></div></div>
+        <div class="card"><h2>📋 所有动态</h2><div id="postList" class="post-list"><div class="empty-state state-loading"><span class="spinner" aria-hidden="true"></span></div></div></div>
         <div class="card">
           <h2>📝 发布新动态</h2>
           <form id="postForm">
@@ -362,14 +77,14 @@
             <div class="form-group"><label>内容摘要</label><textarea id="postExcerpt" placeholder="简短摘要（选填）" rows="2" maxlength="300"></textarea></div>
             <div class="form-group"><label>完整内容</label><textarea id="postContent" placeholder="帖子正文内容" rows="3" maxlength="5000"></textarea></div>
             <div class="form-group"><label>图片链接（可选，用于资金流向公示等）</label><textarea id="postImages" placeholder="图片直链，每行一张（可去图床复制链接）" rows="2" maxlength="2000"></textarea></div>
-            <div class="form-row"><div class="form-group"><label>是否置顶</label><select id="postPinned"><option value="false">否</option><option value="true">是</option></select></div><div class="form-group" style="display:flex;align-items:flex-end;justify-content:flex-end;"><button type="submit" class="btn btn-primary">发布帖子</button></div></div>
+            <div class="form-row"><div class="form-group"><label>是否置顶</label><select id="postPinned"><option value="false">否</option><option value="true">是</option></select></div><div class="form-group" class="row-actions"><button type="submit" class="btn btn-primary">发布帖子</button></div></div>
           </form>
         </div>
       </div>
 
       <!-- 投票 -->
-      <div class="tab-content" id="tab-votes" style="display:none;">
-        <div class="card"><h2>📋 所有投票</h2><div id="voteList" class="post-list"><div class="empty-state">加载中...</div></div></div>
+      <div class="tab-content" id="tab-votes">
+        <div class="card"><h2>📋 所有投票</h2><div id="voteList" class="post-list"><div class="empty-state state-loading"><span class="spinner" aria-hidden="true"></span></div></div></div>
         <div class="card">
           <h2>📝 创建新投票</h2>
           <form id="voteForm">
@@ -379,30 +94,30 @@
               <div class="form-group"><label>投票类型</label><select id="voteType"><option value="agree">同意 / 反对</option><option value="choice">选择</option></select></div>
               <div class="form-group"><label>截止日期（选填）</label><input type="date" id="voteDeadline"></div>
             </div>
-            <div class="form-group" id="voteOptionsGroup" style="display:none;"><label>选项（每行一个）</label><textarea id="voteOptions" placeholder="选项文字（支持 | 符号）| 图片链接1,图片链接2&#10;最后一组竖杠后面放图片链接，逗号分隔多张" rows="3" maxlength="1000"></textarea></div>
-            <div class="form-row"><div class="form-group"></div><div class="form-group" style="display:flex;align-items:flex-end;justify-content:flex-end;"><button type="submit" class="btn btn-primary">创建投票</button></div></div>
+            <div class="form-group" id="voteOptionsGroup" hidden><label>选项（每行一个）</label><textarea id="voteOptions" placeholder="选项文字（支持 | 符号）| 图片链接1,图片链接2&#10;最后一组竖杠后面放图片链接，逗号分隔多张" rows="3" maxlength="1000"></textarea></div>
+            <div class="form-row"><div class="form-group"></div><div class="form-group" class="row-actions"><button type="submit" class="btn btn-primary">创建投票</button></div></div>
           </form>
-          <script>document.getElementById('voteType')?.addEventListener('change',function(){document.getElementById('voteOptionsGroup').style.display=this.value==='choice'?'block':'none'});</script>
+          <script>document.getElementById('voteType')?.addEventListener('change',function(){document.getElementById('voteOptionsGroup').hidden=this.value!=='choice'});</script>
         </div>
       </div>
 
       <!-- 神人榜 -->
-      <div class="tab-content" id="tab-stories" style="display:none;">
-        <div class="card"><h2>📋 神人榜</h2><div id="storyList" class="post-list"><div class="empty-state">加载中...</div></div></div>
+      <div class="tab-content" id="tab-stories">
+        <div class="card"><h2>📋 神人榜</h2><div id="storyList" class="post-list"><div class="empty-state state-loading"><span class="spinner" aria-hidden="true"></span></div></div></div>
         <div class="card">
           <h2>📝 添加新记录</h2>
           <form id="storyForm">
             <div class="form-group"><label>标题 *</label><input type="text" id="storyTitle" placeholder="事件标题" maxlength="100" required></div>
             <div class="form-group"><label>事件描述 *</label><textarea id="storyText" placeholder="描述事件经过" rows="3" maxlength="2000" required></textarea></div>
             <div class="form-group"><label>图片链接（可选）</label><textarea id="storyImageUrls" placeholder="图片/下载直链，每行一张，自动显示为图片" rows="3" maxlength="2000"></textarea></div>
-            <div class="form-row"><div class="form-group"></div><div class="form-group" style="display:flex;align-items:flex-end;justify-content:flex-end;"><button type="submit" class="btn btn-primary">添加记录</button></div></div>
+            <div class="form-row"><div class="form-group"></div><div class="form-group" class="row-actions"><button type="submit" class="btn btn-primary">添加记录</button></div></div>
           </form>
         </div>
       </div>
 
       <!-- 封挂榜 -->
-      <div class="tab-content" id="tab-bans" style="display:none;">
-        <div class="card"><h2>🚫 封挂榜</h2><div id="banList" class="post-list"><div class="empty-state">加载中...</div></div></div>
+      <div class="tab-content" id="tab-bans">
+        <div class="card"><h2>🚫 封挂榜</h2><div id="banList" class="post-list"><div class="empty-state state-loading"><span class="spinner" aria-hidden="true"></span></div></div></div>
         <div class="card">
           <h2>📝 添加封禁记录</h2>
           <form id="banForm">
@@ -411,26 +126,26 @@
               <div class="form-group"><label>封禁日期</label><input type="date" id="banDate"></div>
             </div>
             <div class="form-group"><label>原因</label><textarea id="banReason" placeholder="封禁原因" rows="2" maxlength="300"></textarea></div>
-            <div class="form-row"><div class="form-group"></div><div class="form-group" style="display:flex;align-items:flex-end;justify-content:flex-end;"><button type="submit" class="btn btn-primary">添加记录</button></div></div>
+            <div class="form-row"><div class="form-group"></div><div class="form-group" class="row-actions"><button type="submit" class="btn btn-primary">添加记录</button></div></div>
           </form>
         </div>
       </div>
 
       <!-- 捐赠名单 -->
-      <div class="tab-content" id="tab-donors" style="display:none;">
-        <div class="card"><h2>💝 捐赠名单</h2><div id="donorList" class="post-list"><div class="empty-state">加载中...</div></div></div>
+      <div class="tab-content" id="tab-donors">
+        <div class="card"><h2>💝 捐赠名单</h2><div id="donorList" class="post-list"><div class="empty-state state-loading"><span class="spinner" aria-hidden="true"></span></div></div></div>
         <div class="card">
           <h2>📝 添加捐赠人</h2>
           <form id="donorForm">
             <div class="form-group"><label>名字 *</label><input type="text" id="donorName" placeholder="捐赠人名字" maxlength="50" required></div>
-            <div class="form-row"><div class="form-group"></div><div class="form-group" style="display:flex;align-items:flex-end;justify-content:flex-end;"><button type="submit" class="btn btn-primary">添加捐赠人</button></div></div>
+            <div class="form-row"><div class="form-group"></div><div class="form-group" class="row-actions"><button type="submit" class="btn btn-primary">添加捐赠人</button></div></div>
           </form>
         </div>
       </div>
 
       <!-- 下载中心 -->
-      <div class="tab-content" id="tab-downloads" style="display:none;">
-        <div class="card"><h2>📥 下载中心</h2><div id="downloadList" class="post-list"><div class="empty-state">加载中...</div></div></div>
+      <div class="tab-content" id="tab-downloads">
+        <div class="card"><h2>📥 下载中心</h2><div id="downloadList" class="post-list"><div class="empty-state state-loading"><span class="spinner" aria-hidden="true"></span></div></div></div>
         <div class="card">
           <h2>📝 添加下载项</h2>
           <form id="downloadForm">
@@ -439,68 +154,68 @@
               <div class="form-group"><label>文件大小（选填）</label><input type="text" id="downloadSize" placeholder="如：128MB / 1.2GB" maxlength="30"></div>
             </div>
             <div class="form-group"><label>上传文件（直接传到服务器，推荐）</label><input type="file" id="downloadFile"></div>
-<div style="font-size:.8rem;color:rgba(224,176,90,.75);line-height:1.7;margin:-.3rem 0 .6rem;">离线版提示：这个站点没有后端，无法上传文件。请在「或填外部下载链接」里填 GitHub Release 地址（大文件走 Release）。</div>
-            <div class="form-group" id="downloadProgressBox" style="display:none;">
+<div class="note warn" style="margin:-.3rem 0 .6rem;">离线版提示：这个站点没有后端，无法上传文件。请在「或填外部下载链接」里填 GitHub Release 地址（大文件走 Release）。</div>
+            <div class="form-group" id="downloadProgressBox" hidden>
               <label>上传进度</label>
-              <div style="display:flex;align-items:center;gap:.8rem;">
-                <div style="flex:1;height:10px;border-radius:5px;background:rgba(160,175,190,.12);overflow:hidden;"><div id="downloadProgressBar" style="height:100%;width:0%;border-radius:5px;background:linear-gradient(90deg,#5ab0e0,#3a8aba);transition:width .15s;"></div></div>
-                <span id="downloadProgressText" style="font-size:.82rem;color:rgba(160,175,190,.7);white-space:nowrap;">0%</span>
+              <div class="row-tight">
+                <div class="progress"><div id="downloadProgressBar" class="progress-fill"></div></div>
+                <span id="downloadProgressText" class="nowrap ink-soft">0%</span>
               </div>
-              <div style="font-size:.75rem;opacity:.5;margin-top:.3rem;" id="downloadProgressSpeed"></div>
+              <div class="row-note" id="downloadProgressSpeed"></div>
             </div>
             <div class="form-group"><label>或填外部下载链接（选填，二者填一个）</label><input type="text" id="downloadUrl" placeholder="https://外部地址 或留空用上传文件" maxlength="500"></div>
             <div class="form-group"><label>描述</label><textarea id="downloadDesc" placeholder="描述这个文件是什么、适用版本等" rows="2" maxlength="500"></textarea></div>
-            <div class="form-row"><div class="form-group"></div><div class="form-group" style="display:flex;align-items:flex-end;justify-content:flex-end;"><button type="submit" class="btn btn-primary" id="downloadSubmitBtn">上传并添加</button></div></div>
+            <div class="form-row"><div class="form-group"></div><div class="form-group" class="row-actions"><button type="submit" class="btn btn-primary" id="downloadSubmitBtn">上传并添加</button></div></div>
           </form>
         </div>
-        <div class="card"><h2>🗂️ 已上传文件</h2><div id="downloadFileList" class="post-list"><div class="empty-state">加载中...</div></div></div>
+        <div class="card"><h2>🗂️ 已上传文件</h2><div id="downloadFileList" class="post-list"><div class="empty-state state-loading"><span class="spinner" aria-hidden="true"></span></div></div></div>
       </div>
 
       <!-- 图床 -->
-      <div class="tab-content" id="tab-images" style="display:none;">
+      <div class="tab-content" id="tab-images">
         <div class="card">
           <h2>📤 上传图片</h2>
           <form id="uploadForm">
             <div class="form-group"><label>选择图片（可多选，支持 png/jpg/gif/webp，每张最大 20MB）</label><input type="file" id="uploadFile" accept="image/*" multiple required></div>
-            <div class="form-group"><label>上传结果：</label><div id="uploadResult" style="display:flex;flex-direction:column;gap:0.3rem;max-height:220px;overflow-y:auto;"></div></div>
-            <div class="form-row"><div class="form-group"></div><div class="form-group" style="display:flex;align-items:flex-end;justify-content:flex-end;"><button type="submit" class="btn btn-primary" id="uploadBtn">上传图片</button></div></div>
+            <div class="form-group"><label>上传结果：</label><div id="uploadResult" class="stack-scroll"></div></div>
+            <div class="form-row"><div class="form-group"></div><div class="form-group" class="row-actions"><button type="submit" class="btn btn-primary" id="uploadBtn">上传图片</button></div></div>
           </form>
         </div>
-        <div class="card"><h2>🖼️ 已上传图片</h2><div id="imageList" class="post-list"><div class="empty-state">加载中...</div></div></div>
+        <div class="card"><h2>🖼️ 已上传图片</h2><div id="imageList" class="post-list"><div class="empty-state state-loading"><span class="spinner" aria-hidden="true"></span></div></div></div>
       </div>
 
       <!-- 流量统计 -->
-      <div class="tab-content" id="tab-stats" style="display:none;">
+      <div class="tab-content" id="tab-stats">
         <div class="card">
           <h2>📊 流量总览</h2>
-          <div style="display:flex;gap:1rem;flex-wrap:wrap;">
-            <div style="flex:1;min-width:140px;background:rgba(20,30,40,.3);border:1px solid rgba(160,175,190,.06);border-radius:12px;padding:1rem;text-align:center;">
-              <div style="font-size:1.8rem;font-weight:500;color:#5ab0e0;" id="statTotalPv">-</div>
-              <div style="font-size:.8rem;opacity:.5;letter-spacing:1px;margin-top:.3rem;">总浏览量 PV</div>
+          <div class="row-wrap">
+            <div class="stat-card">
+              <div class="stat-big" id="statTotalPv">-</div>
+              <div class="row-note">总浏览量 PV</div>
             </div>
-            <div style="flex:1;min-width:140px;background:rgba(20,30,40,.3);border:1px solid rgba(160,175,190,.06);border-radius:12px;padding:1rem;text-align:center;">
-              <div style="font-size:1.8rem;font-weight:500;color:#5ad0a0;" id="statTotalUv">-</div>
-              <div style="font-size:.8rem;opacity:.5;letter-spacing:1px;margin-top:.3rem;">独立访客 UV</div>
+            <div class="stat-card">
+              <div class="stat-big ok" id="statTotalUv">-</div>
+              <div class="row-note">独立访客 UV</div>
             </div>
           </div>
         </div>
-        <div class="card"><h2>📈 近 30 天趋势</h2><div id="statDaily"><div class="empty-state">加载中...</div></div></div>
-        <div class="card"><h2>🔥 热门页面（近 7 天）</h2><div id="statPages"><div class="empty-state">加载中...</div></div></div>
+        <div class="card"><h2>📈 近 30 天趋势</h2><div id="statDaily"><div class="empty-state state-loading"><span class="spinner" aria-hidden="true"></span></div></div></div>
+        <div class="card"><h2>🔥 热门页面（近 7 天）</h2><div id="statPages"><div class="empty-state state-loading"><span class="spinner" aria-hidden="true"></span></div></div></div>
       </div>
 
       <!-- 备份 -->
-      <div class="tab-content" id="tab-backups" style="display:none;">
+      <div class="tab-content" id="tab-backups">
         <div class="card">
           <h2>💾 数据备份</h2>
-          <div style="font-size:.85rem;opacity:.6;margin-bottom:1rem;">服务器每天自动备份（保留 30 份）。也可手动备份下载 .db 文件。一键回档会把所选备份覆盖回当前数据库，回档前自动保存当前数据快照。</div>
+          <div class="muted-sm">服务器每天自动备份（保留 30 份）。也可手动备份下载 .db 文件。一键回档会把所选备份覆盖回当前数据库，回档前自动保存当前数据快照。</div>
           <button class="btn btn-primary" onclick="backupNow()">📦 立即备份并下载</button>
         </div>
-        <div class="card"><h2>🗂️ 已有备份</h2><div id="backupList" class="post-list"><div class="empty-state">加载中...</div></div></div>
+        <div class="card"><h2>🗂️ 已有备份</h2><div id="backupList" class="post-list"><div class="empty-state state-loading"><span class="spinner" aria-hidden="true"></span></div></div></div>
       </div>
 
       <!-- 操作日志 -->
-      <div class="tab-content" id="tab-oplog" style="display:none;">
-        <div class="card"><h2>📜 操作日志（最近 100 条）</h2><div id="oplogList" class="post-list"><div class="empty-state">加载中...</div></div></div>
+      <div class="tab-content" id="tab-oplog">
+        <div class="card"><h2>📜 操作日志（最近 100 条）</h2><div id="oplogList" class="post-list"><div class="empty-state state-loading"><span class="spinner" aria-hidden="true"></span></div></div></div>
       </div>
 
     </div>
@@ -508,15 +223,18 @@
   </div>
 
   <!-- 编辑投票弹窗 -->
-  <div id="editVoteOverlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.8);backdrop-filter:blur(10px);z-index:9999;align-items:center;justify-content:center;">
-    <div style="background:rgba(16,24,32,.95);border:1px solid rgba(160,175,190,.1);border-radius:20px;padding:2.5rem;max-width:460px;width:90%;">
-      <h2 style="font-size:1.3rem;font-weight:400;letter-spacing:2px;color:#b8d0dd;margin-bottom:1.5rem;">✏️ 编辑投票</h2>
-      <div class="form-group"><label>标题</label><input type="text" id="editVoteTitle" style="width:100%;padding:0.7rem 1rem;background:rgba(20,30,40,.4);border:1px solid rgba(160,175,190,.1);border-radius:10px;color:#eef2f5;font-size:0.95rem;font-family:inherit;"></div>
-      <div class="form-group"><label>描述</label><textarea id="editVoteDesc" rows="2" style="width:100%;padding:0.7rem 1rem;background:rgba(20,30,40,.4);border:1px solid rgba(160,175,190,.1);border-radius:10px;color:#eef2f5;font-size:0.95rem;font-family:inherit;"></textarea></div>
-      <div class="form-group"><label>截止日期</label><input type="date" id="editVoteDeadline" style="width:100%;padding:0.7rem 1rem;background:rgba(20,30,40,.4);border:1px solid rgba(160,175,190,.1);border-radius:10px;color:#eef2f5;font-size:0.95rem;font-family:inherit;color-scheme:dark;"></div>
-      <div class="form-row" style="display:flex;gap:0.8rem;margin-top:1.2rem;">
-        <button onclick="closeEditVote()" style="flex:1;padding:0.7rem;border-radius:10px;border:1px solid rgba(160,175,190,.1);background:transparent;color:rgba(160,175,190,.5);cursor:pointer;font-family:inherit;font-size:0.95rem;letter-spacing:1px;">取消</button>
-        <button onclick="saveEditVote()" style="flex:1;padding:0.7rem;border-radius:10px;border:none;background:linear-gradient(135deg,#5ab0e0,#3a8aba);color:#fff;cursor:pointer;font-family:inherit;font-size:0.95rem;letter-spacing:1px;">保存修改</button>
+  <div id="editVoteOverlay" class="overlay" hidden role="dialog" aria-modal="true" aria-labelledby="editVoteHeading">
+    <div class="modal">
+      <div class="modal-head">
+        <h2 id="editVoteHeading">✏️ 编辑投票</h2>
+        <button class="icon-btn" type="button" onclick="closeEditVote()" aria-label="关闭"><i class="fas fa-times" aria-hidden="true"></i></button>
+      </div>
+      <div class="form-group"><label for="editVoteTitle">标题</label><input type="text" id="editVoteTitle"></div>
+      <div class="form-group"><label for="editVoteDesc">描述</label><textarea id="editVoteDesc" rows="2"></textarea></div>
+      <div class="form-group"><label for="editVoteDeadline">截止日期</label><input type="date" id="editVoteDeadline"></div>
+      <div class="modal-foot">
+        <button class="btn btn-ghost" type="button" onclick="closeEditVote()">取消</button>
+        <button class="btn btn-primary" type="button" onclick="saveEditVote()">保存修改</button>
       </div>
     </div>
   </div>
@@ -575,7 +293,7 @@ function esc(s) {
           adminPassword = password;
           sessionStorage.setItem('admin_pass', password);
           authOverlay.classList.add('hidden');
-          mainContent.style.display = 'block';
+          mainContent.hidden = false;
           authError.textContent = '';
           loadPosts();
           loadVotes();
@@ -603,12 +321,12 @@ function esc(s) {
     if (sessionStorage.getItem('admin_pass')) {
       adminPassword = sessionStorage.getItem('admin_pass');
       authOverlay.classList.add('hidden');
-      mainContent.style.display = 'block';
+      mainContent.hidden = false;
       loadPosts();
       loadVotes();
     } else {
       authOverlay.classList.remove('hidden');
-      mainContent.style.display = 'none';
+      mainContent.hidden = true;
       authInput.focus();
     }
 
@@ -616,7 +334,7 @@ function esc(s) {
       sessionStorage.removeItem('admin_pass');
       adminPassword = '';
       authOverlay.classList.remove('hidden');
-      mainContent.style.display = 'none';
+      mainContent.hidden = true;
       authInput.value = '';
       authInput.focus();
     }
@@ -655,7 +373,7 @@ function esc(s) {
         }
         container.innerHTML = data.votes.map(v => {
           const summary = v.type === 'choice' ? v.options.map(o => (o + ': ' + (v.counts?.[o] || 0))).join(' · ') : ('同意 ' + (v.yesCount ?? 0) + ' · 反对 ' + (v.noCount ?? 0));
-          const badge = v.type === 'choice' ? '<span style="font-size:.65rem;opacity:.4;letter-spacing:1px;margin-right:6px;">[选择]</span>' : '';
+          const badge = v.type === 'choice' ? '<span class="form-label-hint">[选择]</span>' : '';
           return '<div class="post-item"><div class="info"><span class="title">' + badge + esc(v.title) + '</span><span class="meta">' + esc(summary) + ' · ' + esc((v.date || '').split('T')[0]) + (v.deadline ? ' · 截止 ' + esc(v.deadline) : '') + '</span></div><div class="actions"><button class="btn btn-primary" style="padding:0.3rem 0.8rem;font-size:0.8rem;background:rgba(90,176,224,.1);border:1px solid rgba(90,176,224,.15);color:#5ab0e0;" onclick="editVote(\'' + esc(v.id) + '\')">编辑</button><button class="btn btn-danger" onclick="deleteVote(\'' + esc(v.id) + '\')">删除</button></div></div>';
         }).join('');
       } catch {
@@ -728,11 +446,43 @@ function esc(s) {
           document.getElementById('editVoteDeadline').value = vote.deadline || '';
         }
       } catch {}
-      document.getElementById('editVoteOverlay').style.display = 'flex';
+      openModal('editVoteOverlay');
     };
 
+    // ============================================================
+    // 弹窗通用逻辑：Esc 关闭 / 点遮罩关闭 / 焦点管理
+    // ============================================================
+    let _modalLastFocus = null;
+    window.openModal = function(id) {
+      const ov = document.getElementById(id);
+      if (!ov) return;
+      _modalLastFocus = document.activeElement;
+      ov.hidden = false;
+      const first = ov.querySelector('input, textarea, select, button');
+      if (first) setTimeout(() => first.focus(), 30);
+    };
+    window.closeModal = function(id) {
+      const ov = document.getElementById(id);
+      if (!ov) return;
+      ov.hidden = true;
+      if (_modalLastFocus && _modalLastFocus.focus) _modalLastFocus.focus();
+    };
+    document.addEventListener('keydown', function (e) {
+      if (e.key !== 'Escape') return;
+      document.querySelectorAll('.overlay').forEach(function (ov) {
+        if (!ov.hidden) { ov.hidden = true; if (_modalLastFocus) _modalLastFocus.focus(); }
+      });
+    });
+    document.addEventListener('click', function (e) {
+      // 点在遮罩本身（不是内容区）时关闭
+      if (e.target.classList && e.target.classList.contains('overlay')) {
+        e.target.hidden = true;
+        if (_modalLastFocus) _modalLastFocus.focus();
+      }
+    });
+
     window.closeEditVote = function() {
-      document.getElementById('editVoteOverlay').style.display = 'none';
+      closeModal('editVoteOverlay');
       editingVoteId = null;
     };
 
@@ -924,12 +674,13 @@ function esc(s) {
     // Tab 切换
     // ============================================================
     window.switchTab = function(name) {
-      document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
-      document.getElementById('tab-' + name).style.display = 'block';
+      document.querySelectorAll('.tab-content').forEach(el => {
+        el.classList.toggle('active', el.id === 'tab-' + name);
+      });
       document.querySelectorAll('.tab-btn').forEach(el => {
-        el.style.background = el.dataset.tab === name ? 'rgba(90,176,224,.1)' : 'transparent';
-        el.style.color = el.dataset.tab === name ? '#7bb3d9' : 'rgba(160,175,190,.5)';
-        el.style.borderColor = el.dataset.tab === name ? 'rgba(160,175,190,.1)' : 'rgba(160,175,190,.08)';
+        const on = el.dataset.tab === name;
+        el.classList.toggle('active', on);
+        el.setAttribute('aria-selected', String(on));
       });
       if (name === 'stories' && !window._storiesLoaded) { window._storiesLoaded = true; loadStories(); }
       if (name === 'bans' && !window._bansLoaded) { window._bansLoaded = true; loadBans(); }
@@ -1141,7 +892,7 @@ function esc(s) {
               <span class="meta">${d.size ? esc(d.size) + ' · ' : ''}${esc((d.desc || '').slice(0, 30))}${(d.desc || '').length > 30 ? '...' : ''}${d.date ? ' · ' + esc((d.date || '').slice(0, 10)) : ''}</span>
             </div>
             <div class="actions">
-              <a href="${esc(dlUrl)}" target="_blank" rel="noopener" style="padding:0.3rem 0.8rem;font-size:0.8rem;border-radius:10px;border:1px solid rgba(90,176,224,.2);background:rgba(90,176,224,.08);color:#5ab0e0;text-decoration:none;font-family:inherit;">打开链接</a>
+              <a href="${esc(dlUrl)}" target="_blank" rel="noopener" class="btn btn-sm">打开链接</a>
               <button class="btn btn-danger" onclick="deleteDownload('${esc(d.id)}')">删除</button>
             </div>
           </div>`;
@@ -1176,7 +927,7 @@ function esc(s) {
           origName = data.origName || file.name;
           if (!size) size = formatFileSize(data.size);
         }
-        progressBox.style.display = 'none';
+        progressBox.hidden = true;
         if (!url) { showToast('请上传文件或填写外部链接', 'error'); btn.disabled = false; btn.textContent = '上传并添加'; return; }
         const createResp = await fetchApi('/api/downloads', {
           method: 'POST',
@@ -1198,7 +949,7 @@ function esc(s) {
         const bar = document.getElementById('downloadProgressBar');
         const txt = document.getElementById('downloadProgressText');
         const speedEl = document.getElementById('downloadProgressSpeed');
-        box.style.display = 'block';
+        box.hidden = false;
         bar.style.width = '0%';
         txt.textContent = '0%';
         speedEl.textContent = '';
@@ -1274,13 +1025,13 @@ function esc(s) {
           return;
         }
         container.innerHTML = data.files.map(f => `
-          <div class="post-item" style="align-items:center;">
+          <div class="post-item" class="items-center">
             <div class="info">
-              <span class="title" style="font-size:.85rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:240px;">${esc(f.filename)}</span>
+              <span class="title" class="truncate-sm">${esc(f.filename)}</span>
               <span class="meta">${esc(formatFileSize(f.size))}</span>
             </div>
             <div class="actions">
-              <a href="${esc(fileUrl(f.url))}" target="_blank" rel="noopener" style="padding:0.3rem 0.8rem;font-size:0.8rem;border-radius:10px;border:1px solid rgba(90,176,224,.2);background:rgba(90,176,224,.08);color:#5ab0e0;text-decoration:none;font-family:inherit;">打开</a>
+              <a href="${esc(fileUrl(f.url))}" target="_blank" rel="noopener" class="btn btn-sm">打开</a>
               <button class="btn btn-danger" onclick="deleteDownloadFile('${esc(f.filename)}')">删除</button>
             </div>
           </div>`).join('');
@@ -1319,7 +1070,7 @@ function esc(s) {
       const uploadOne = (file) => new Promise((resolve) => {
         if (file.size > 20 * 1024 * 1024) {
           fail++;
-          resultBox.insertAdjacentHTML('beforeend', `<div style="color:#e06060;font-size:.85rem;display:flex;gap:6px;"><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">❌ ${file.name} 超过 20MB</span></div>`);
+          resultBox.insertAdjacentHTML('beforeend', `<div class="err-line"><span class="truncate">❌ ${file.name} 超过 20MB</span></div>`);
           return resolve();
         }
         const reader = new FileReader();
@@ -1333,15 +1084,15 @@ function esc(s) {
             const data = await resp.json();
             if (data.success) {
               ok++;
-              resultBox.insertAdjacentHTML('beforeend', `<div style="display:flex;align-items:center;gap:6px;font-size:.85rem;color:#5ad0a0;min-width:0;"><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">✅ ${file.name}</span><button onclick="copyImageUrl('${data.url}')" style="flex-shrink:0;padding:0.15rem 0.6rem;border-radius:6px;border:1px solid rgba(90,176,224,.2);background:rgba(90,176,224,.08);color:#5ab0e0;cursor:pointer;font-size:.7rem;font-family:inherit;">复制链接</button></div>`);
+              resultBox.insertAdjacentHTML('beforeend', `<div class="row-ok"><span class="truncate">✅ ${file.name}</span><button onclick="copyImageUrl('${data.url}')" class="chip-btn no-shrink">复制链接</button></div>`);
             } else {
               fail++;
-              resultBox.insertAdjacentHTML('beforeend', `<div style="color:#e06060;font-size:.85rem;display:flex;gap:6px;"><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">❌ ${file.name}: ${data.error || '失败'}</span></div>`);
+              resultBox.insertAdjacentHTML('beforeend', `<div class="err-line"><span class="truncate">❌ ${file.name}: ${data.error || '失败'}</span></div>`);
               if (resp.status === 401) logout();
             }
           } catch (err) {
             fail++;
-            resultBox.insertAdjacentHTML('beforeend', `<div style="color:#e06060;font-size:.85rem;display:flex;gap:6px;"><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">❌ ${file.name}: ${err.message}</span></div>`);
+            resultBox.insertAdjacentHTML('beforeend', `<div class="err-line"><span class="truncate">❌ ${file.name}: ${err.message}</span></div>`);
           }
           resolve();
         };
@@ -1366,12 +1117,12 @@ function esc(s) {
           return;
         }
         container.innerHTML = data.images.map(im => `
-          <div class="post-item" style="align-items:center;">
-            <div style="display:flex;align-items:center;gap:0.8rem;min-width:0;">
-              <img src="${esc(fileUrl(im.url))}" style="width:64px;height:64px;object-fit:cover;border-radius:8px;background:rgba(255,255,255,.05);flex-shrink:0;cursor:zoom-in;" loading="lazy" title="点击查看原图" onclick="window.open('${esc(fileUrl(im.url))}','_blank')">
-              <div style="min-width:0;">
-                <div style="font-size:0.75rem;color:rgba(160,175,190,.5);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:180px;">${esc(im.filename)}</div>
-                <button onclick="copyImageUrl('${esc(im.url)}')" style="margin-top:0.2rem;padding:0.2rem 0.7rem;border-radius:6px;border:1px solid rgba(90,176,224,.2);background:rgba(90,176,224,.08);color:#5ab0e0;cursor:pointer;font-size:0.75rem;font-family:inherit;">复制链接</button>
+          <div class="post-item" class="items-center">
+            <div class="row-tight">
+              <img src="${esc(fileUrl(im.url))}" class="thumb" loading="lazy" title="点击查看原图" onclick="window.open('${esc(fileUrl(im.url))}','_blank')">
+              <div class="min-w-0">
+                <div class="truncate-xs">${esc(im.filename)}</div>
+                <button onclick="copyImageUrl('${esc(im.url)}')" class="chip-btn">复制链接</button>
               </div>
             </div>
             <div class="actions">
@@ -1414,16 +1165,16 @@ function esc(s) {
 
         const daily = data.daily || [];
         document.getElementById('statDaily').innerHTML = daily.length ? daily.map(d => `
-          <div style="display:flex;align-items:center;justify-content:space-between;padding:.4rem .6rem;border-radius:8px;background:rgba(200,215,230,.02);border:1px solid rgba(160,175,190,.04);margin-bottom:.3rem;font-size:.9rem;">
-            <span style="color:#c8dce6;">${d.day}</span>
-            <span style="opacity:.6;">PV ${d.pv} · UV ${d.uv}</span>
+          <div class="mini-row">
+            <span class="ink-soft">${d.day}</span>
+            <span class="op-60">PV ${d.pv} · UV ${d.uv}</span>
           </div>`).join('') : '<div class="empty-state">暂无数据</div>';
 
         const pages = data.pages || [];
         document.getElementById('statPages').innerHTML = pages.length ? pages.map((p, i) => `
-          <div style="display:flex;align-items:center;justify-content:space-between;padding:.4rem .6rem;border-radius:8px;background:rgba(200,215,230,.02);border:1px solid rgba(160,175,190,.04);margin-bottom:.3rem;font-size:.9rem;">
-            <span style="color:#c8dce6;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:60%;">${i + 1}. ${p.page || '/'}</span>
-            <span style="opacity:.6;">${p.cnt} 次</span>
+          <div class="mini-row">
+            <span class="truncate-60">${i + 1}. ${p.page || '/'}</span>
+            <span class="op-60">${p.cnt} 次</span>
           </div>`).join('') : '<div class="empty-state">暂无数据</div>';
       } catch { document.getElementById('statDaily').innerHTML = '<div class="empty-state">❌ 加载失败</div>'; }
     }
@@ -1442,9 +1193,9 @@ function esc(s) {
         }
         container.innerHTML = data.backups.map(b => `
           <div class="post-item">
-            <div class="info"><span class="title" style="font-size:.85rem;">${b.name}</span><span class="meta">${(b.size / 1024).toFixed(1)} KB · ${(b.mtime || '').replace('T', ' ').slice(0, 19)}</span></div>
+            <div class="info"><span class="title" class="muted-sm">${b.name}</span><span class="meta">${(b.size / 1024).toFixed(1)} KB · ${(b.mtime || '').replace('T', ' ').slice(0, 19)}</span></div>
             <div class="actions">
-              <button class="btn btn-primary" style="padding:0.3rem 0.8rem;font-size:0.8rem;background:rgba(224,176,90,.12);border:1px solid rgba(224,176,90,.25);color:#e0b05a;" onclick="restoreBackup('${b.name}')">↩ 一键回档</button>
+              <button class="btn btn-primary" class="chip-btn warn" onclick="restoreBackup('${b.name}')">↩ 一键回档</button>
             </div>
           </div>`).join('');
       } catch { container.innerHTML = '<div class="empty-state">❌ 加载失败</div>'; }
@@ -1500,11 +1251,12 @@ function esc(s) {
         }
         container.innerHTML = data.logs.map(l => `
           <div class="post-item">
-            <div class="info"><span class="title" style="font-size:.85rem;color:#5ab0e0;">${esc(l.action)}</span><span class="meta" style="word-break:break-all;">${esc(l.detail || '')}</span></div>
-            <span class="meta" style="flex-shrink:0;">${esc((l.t || '').replace('T', ' ').slice(0, 19))}</span>
+            <div class="info"><span class="title" class="link-accent">${esc(l.action)}</span><span class="meta" class="break-all">${esc(l.detail || '')}</span></div>
+            <span class="meta" class="no-shrink">${esc((l.t || '').replace('T', ' ').slice(0, 19))}</span>
           </div>`).join('');
       } catch { container.innerHTML = '<div class="empty-state">❌ 加载失败</div>'; }
     }
   </script>
+<script src="js/ui.js"></script>
 </body>
 </html>
