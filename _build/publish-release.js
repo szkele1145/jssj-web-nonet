@@ -44,7 +44,9 @@ if (!TOKEN) { console.error('没有拿到 GitHub 令牌：设置 GH_TOKEN，或�
 
 const cfgPath = path.join(BUILD, 'release-config.json');
 const cfg = Object.assign({ repo: 'szkele1145/jssj-web-nonet', tag: 'offline-v1', releaseBase: '' },
-  fs.existsSync(cfgPath) ? JSON.parse(fs.readFileSync(cfgPath, 'utf8')) : {});
+  fs.existsSync(cfgPath) ? JSON.parse(fs.readFileSync(cfgPath, 'utf8').replace(/^\uFEFF/, '')) : {});
+// tag 为空表示「离线站点暂时回落到线上服务器」，发布时补上默认 tag
+const TAG = cfg.tag || 'offline-v1';
 
 const API = 'https://api.github.com';
 const H = { Authorization: 'Bearer ' + TOKEN, Accept: 'application/vnd.github+json', 'User-Agent': 'jssj-offline-build', 'X-GitHub-Api-Version': '2022-11-28' };
@@ -198,6 +200,43 @@ async function uploadAsset(repo, releaseId, name, file) {
 }
 
 // ------------------------------------------------------------
+// 从本地文件夹「认领」已经下好的文件（用户在浏览器里下好放过来）
+// 匹配规则：文件名相同 → 直接采用；否则比对服务器上的大小，一致就用
+// ------------------------------------------------------------
+async function stageFromFolder(fromDir, items) {
+  if (!fromDir) return 0;
+  if (!fs.existsSync(fromDir)) { console.log('  ! 指定的文件夹不存在：' + fromDir); return 0; }
+  const cands = fs.readdirSync(fromDir, { withFileTypes: true })
+    .filter(e => e.isFile() && !e.name.endsWith('.part'))
+    .map(e => path.join(fromDir, e.name));
+  if (!cands.length) { console.log('  ! 文件夹里没有文件：' + fromDir); return 0; }
+
+  let staged = 0;
+  for (const it of items) {
+    const dest = path.join(CACHE, it.name);
+    if (fs.existsSync(dest) && fs.statSync(dest).size > 0) continue;
+
+    // 1) 同名
+    let hit = cands.find(c => path.basename(c) === it.name);
+    // 2) 大小匹配
+    if (!hit) {
+      const remote = await remoteSize(it.remote);
+      hit = cands.find(c => remote && fs.statSync(c).size === remote);
+    }
+    if (hit) {
+      fs.copyFileSync(hit, dest);
+      console.log('  ✓ 采用本地文件 ' + path.basename(hit) + ' → ' + it.name +
+        '（' + mb(fs.statSync(dest).size) + '）');
+      staged++;
+    } else {
+      const remote = await remoteSize(it.remote);
+      console.log('  · 文件夹里没找到 ' + it.name + '（应为 ' + (remote ? mb(remote) : '?') + '），将尝试下载');
+    }
+  }
+  return staged;
+}
+
+// ------------------------------------------------------------
 (async () => {
   const initSqlJs = require(path.join(ROOT, 'lib/sql-asm.js'));
   const SQL = await initSqlJs();
@@ -220,6 +259,14 @@ async function uploadAsset(repo, releaseId, name, file) {
   items.forEach(i => console.log('  · ' + i.name + '（' + i.size + '）'));
   fs.mkdirSync(CACHE, { recursive: true });
 
+  // ① 先用本地文件夹里的文件补齐（用户在浏览器下好的）
+  const fromArg = process.argv.indexOf('--from');
+  const fromDir = fromArg >= 0 ? process.argv[fromArg + 1] : (process.env.JSSJ_FILES_DIR || '');
+  if (fromDir) {
+    console.log('\n⓪ 从本地文件夹认领文件：' + fromDir);
+    await stageFromFolder(fromDir, items);
+  }
+
   console.log('\n① 准备文件（断点续传）');
   const useCurl = hasCurl();
   console.log('  下载方式：' + (useCurl ? 'curl（推荐）' : 'Node 内置 fetch 流'));
@@ -237,7 +284,7 @@ async function uploadAsset(repo, releaseId, name, file) {
   }
 
   console.log('\n② 确保 Release 存在');
-  let release, r = await fetch(API + '/repos/' + cfg.repo + '/releases/tags/' + cfg.tag, { headers: H });
+  let release, r = await fetch(API + '/repos/' + cfg.repo + '/releases/tags/' + TAG, { headers: H });
   if (r.status === 200) {
     release = await r.json();
     console.log('  ✓ 已存在：' + release.name + '（id ' + release.id + '）');
@@ -245,7 +292,7 @@ async function uploadAsset(repo, releaseId, name, file) {
     r = await fetch(API + '/repos/' + cfg.repo + '/releases', {
       method: 'POST', headers: Object.assign({ 'Content-Type': 'application/json' }, H),
       body: JSON.stringify({
-        tag_name: cfg.tag,
+        tag_name: TAG,
         name: '离线版大文件（下载中心）',
         body: '建设世界官网离线静态版所用的下载文件。\n\n站点本身不含这些大文件，下载页的链接直接指向这里。',
       }),
@@ -262,8 +309,8 @@ async function uploadAsset(repo, releaseId, name, file) {
     await uploadAsset(cfg.repo, release.id, it.name, path.join(CACHE, it.name));
   }
 
-  const base = 'https://github.com/' + cfg.repo + '/releases/download/' + cfg.tag + '/';
-  fs.writeFileSync(cfgPath, JSON.stringify(Object.assign({}, cfg, { releaseBase: base }), null, 2));
+  const base = 'https://github.com/' + cfg.repo + '/releases/download/' + TAG + '/';
+  fs.writeFileSync(cfgPath, JSON.stringify(Object.assign({}, cfg, { tag: TAG, releaseBase: base }), null, 2));
   console.log('\n④ release-config.json 已更新：releaseBase = ' + base);
   execFileSync(process.execPath, [path.join(BUILD, 'build-site.js')], { stdio: 'inherit' });
   console.log('\n完成。提交推送：');

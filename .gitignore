@@ -3,6 +3,7 @@ _build/dump.json
 _build/dumps/
 _build/dumps-live/
 _build/release-files/
+_build/commit-msg.txt
 _build/access.log
 _build/*.log
 node_modules/
