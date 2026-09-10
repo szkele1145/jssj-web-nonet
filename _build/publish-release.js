@@ -168,7 +168,15 @@ async function downloadResumable(url, dest, label) {
 
 // ------------------------------------------------------------
 // 上传（带重试）
+// GitHub 会把资源名里的非 ASCII 字符清理掉（"建设世界…2.0.zip" → "2.0.zip"），
+// 所以 Release 上用英文名；页面上显示的中文名来自数据库字段，不受影响。
+// 上传过程中代理可能把响应弄丢（fetch failed），因此失败后先查资源是否已存在。
 // ------------------------------------------------------------
+async function listAssets(repo, releaseId) {
+  const r = await fetch(API + '/repos/' + repo + '/releases/' + releaseId + '/assets?per_page=100', { headers: H });
+  return r.ok ? (await r.json()) : [];
+}
+
 async function uploadAsset(repo, releaseId, name, file) {
   const buf = fs.readFileSync(file);
   const url = 'https://uploads.github.com/repos/' + repo + '/releases/' + releaseId +
@@ -185,13 +193,23 @@ async function uploadAsset(repo, releaseId, name, file) {
         signal: ctl.signal,
       });
       clearTimeout(timer);
-      if (!r.ok) throw new Error('HTTP ' + r.status + ' ' + (await r.text()).slice(0, 200));
+      if (r.status === 422 && /already_exists/.test(await r.text().catch(() => ''))) {
+        const hit = (await listAssets(repo, releaseId)).find(a => a.name === name && a.size === buf.length);
+        if (hit) { console.log('  ✓ ' + name + '（服务端已存在，直接采用）'); return hit; }
+      }
+      if (!r.ok) throw new Error('HTTP ' + r.status);
       const j = await r.json();
       console.log('  ✓ ' + name + ' ' + mb(buf.length) + '（' + ((Date.now() - t0) / 1000).toFixed(0) + 's）');
       console.log('    → ' + j.browser_download_url);
       return j;
     } catch (e) {
       clearTimeout(timer);
+      // 响应可能丢在路上，但资源其实已经建成 —— 先查一次
+      const hit = (await listAssets(repo, releaseId)).find(a => a.name === name && a.size === buf.length);
+      if (hit) {
+        console.log('  ✓ ' + name + '（第 ' + attempt + ' 次尝试未收到响应，但服务端已存在 ' + mb(hit.size) + '，视为成功）');
+        return hit;
+      }
       console.log('  ! 第 ' + attempt + ' 次上传失败：' + (e.message || e) + '（已耗时 ' + ((Date.now() - t0) / 1000).toFixed(0) + 's）');
       if (attempt < UPLOAD_TRIES) await new Promise(r => setTimeout(r, 5000));
     }
@@ -218,7 +236,13 @@ async function stageFromFolder(fromDir, items) {
 
     // 1) 同名
     let hit = cands.find(c => path.basename(c) === it.name);
-    // 2) 大小匹配
+    // 2) 浏览器下载下来的原始文件名（dl_xxxx.zip，出现在源站 URL 里）
+    if (!hit) {
+      let base = '';
+      try { base = path.basename(new URL(it.remote).pathname); } catch (e) {}
+      if (base) hit = cands.find(c => path.basename(c) === base);
+    }
+    // 3) 大小完全一致
     if (!hit) {
       const remote = await remoteSize(it.remote);
       hit = cands.find(c => remote && fs.statSync(c).size === remote);
@@ -249,6 +273,7 @@ async function stageFromFolder(fromDir, items) {
   const items = rows
     .filter(r => /\/downloads\//.test(String(r.url || '')))
     .map(r => ({
+      dbUrl: String(r.url),
       name: r.filename || String(r.url).split('/').pop(),
       size: r.size || '',
       remote: 'https://api.jssj.cc.cd' + (String(r.url).startsWith('/') ? '' : '/') + r.url,
@@ -302,16 +327,57 @@ async function stageFromFolder(fromDir, items) {
     console.log('  ✓ 已创建：' + release.name + '（id ' + release.id + '）');
   }
 
-  const existing = new Set((release.assets || []).map(a => a.name));
+  // 目标资源名（必须是 ASCII，GitHub 会清掉中文）
+  const assetNameOf = (it) => (cfg.assetNames && cfg.assetNames[it.dbUrl]) || it.name;
+
   console.log('\n③ 上传资源');
+  const targets = new Set(items.map(assetNameOf));
+  const downloadUrls = {};
+  const localOf = (it) => path.join(CACHE, it.name);
+
+  // 先处理名字不符的旧资源：能按大小对上号的直接改名复用（省一次上传），否则删掉
+  for (const a of (release.assets || [])) {
+    if (targets.has(a.name)) continue;
+    const match = items.find(it => fs.existsSync(localOf(it)) && fs.statSync(localOf(it)).size === a.size);
+    if (match) {
+      const want = assetNameOf(match);
+      const pr = await fetch(API + '/repos/' + cfg.repo + '/releases/assets/' + a.id, {
+        method: 'PATCH',
+        headers: Object.assign({ 'Content-Type': 'application/json' }, H),
+        body: JSON.stringify({ name: want }),
+      });
+      const pj = await pr.json();
+      if (pj && pj.name === want) {
+        console.log('  · 旧资源 ' + a.name + ' 已改名为 ' + want + '（复用，不用重传）');
+        downloadUrls[match.dbUrl] = pj.browser_download_url;
+        continue;
+      }
+      console.log('  · 旧资源 ' + a.name + ' 改名失败（返回 ' + (pj && pj.name) + '），将删除后重传');
+    }
+    const d = await fetch(API + '/repos/' + cfg.repo + '/releases/assets/' + a.id, { method: 'DELETE', headers: H });
+    console.log('  · 删除无用资源 ' + a.name + '（HTTP ' + d.status + '）');
+  }
+
   for (const it of items) {
-    if (existing.has(it.name)) { console.log('  ✓ ' + it.name + '（Release 里已有，跳过）'); continue; }
-    await uploadAsset(cfg.repo, release.id, it.name, path.join(CACHE, it.name));
+    const name = assetNameOf(it);
+    const local = localOf(it);
+    const already = (await listAssets(cfg.repo, release.id)).find(a => a.name === name && a.size === fs.statSync(local).size);
+    let asset = already;
+    if (already) {
+      console.log('  ✓ ' + name + '（Release 里已有同大小资源，跳过上传）');
+    } else {
+      asset = await uploadAsset(cfg.repo, release.id, name, local);
+    }
+    if (asset && asset.browser_download_url) downloadUrls[it.dbUrl] = asset.browser_download_url;
   }
 
   const base = 'https://github.com/' + cfg.repo + '/releases/download/' + TAG + '/';
-  fs.writeFileSync(cfgPath, JSON.stringify(Object.assign({}, cfg, { tag: TAG, releaseBase: base }), null, 2));
-  console.log('\n④ release-config.json 已更新：releaseBase = ' + base);
+  fs.writeFileSync(cfgPath, JSON.stringify(Object.assign({}, cfg, {
+    tag: TAG, releaseBase: base, downloadUrls,
+  }), null, 2));
+  console.log('\n④ release-config.json 已更新（含真实资源地址）');
+  for (const [k, v] of Object.entries(downloadUrls)) console.log('   ' + k + '\n     → ' + v);
+  console.log('\n   重新构建页面…');
   execFileSync(process.execPath, [path.join(BUILD, 'build-site.js')], { stdio: 'inherit' });
   console.log('\n完成。提交推送：');
   console.log('  cd "' + ROOT + '" && git add -A && git commit -m "下载项指向 Release" && git push');

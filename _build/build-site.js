@@ -240,7 +240,12 @@ async function main() {
   const downloadMap = {};
   for (const r of dlRows) {
     if (!/\/downloads\//.test(String(r.url || ''))) continue;
-    const asset = r.filename || String(r.url).split('/').pop();
+    // 发布脚本回填的真实资源地址优先（GitHub 会清理中文名，实际地址以它为准）
+    if (relCfg.downloadUrls && relCfg.downloadUrls[r.url]) {
+      downloadMap[r.url] = relCfg.downloadUrls[r.url];
+      continue;
+    }
+    const asset = (relCfg.assetNames && relCfg.assetNames[r.url]) || r.filename || String(r.url).split('/').pop();
     if (releaseBase) downloadMap[r.url] = releaseBase + encodeURIComponent(asset);
   }
   fs.writeFileSync(path.join(OUT, 'offline/download-map.js'),
