@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>建设世界 · 投票</title>
+<meta name="description" content="建设世界社区投票：同意/反对、选择、历史结果。">
+<meta property="og:title" content="建设世界 · 投票">
+<meta property="og:description" content="建设世界社区投票：同意/反对、选择、历史结果。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://jssj.cc.cd/votes.html">
+<meta property="og:image" content="https://jssj.cc.cd/favicon.png">
+<link rel="stylesheet" href="css/fontawesome/all.min.css">
+<link rel="icon" href="favicon.png">
+<link rel="stylesheet" href="css/style.css">
+<script src="offline/offline.js"></script><script>if(localStorage.getItem('theme')==='light')document.documentElement.classList.add('light-mode')</script><script>(function(){try{var v=localStorage.getItem('vid');if(!v){v='v'+Date.now().toString(36)+Math.random().toString(36).slice(2,8);localStorage.setItem('vid',v);}var b=location.hostname==='sh.jssj.cc.cd'?'https://shapi.jssj.cc.cd':'https://api.jssj.cc.cd';fetch(b+'/api/track',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({vid:v,page:location.pathname}),keepalive:true}).catch(function(){});}catch(e){}})();</script>
+<style>
+  .vote-card{background:rgba(16,24,32,.2);border:1px solid rgba(160,175,190,.04);border-radius:16px;padding:1.5rem 1.8rem;margin-bottom:1.2rem;transition:.2s}
+  html.light-mode .vote-card{background:rgba(220,235,250,.12);border-color:rgba(80,120,160,.04)}
+  .vote-card:hover{border-color:rgba(160,175,190,.1)}
+  html.light-mode .vote-card:hover{border-color:rgba(80,120,160,.1)}
+  .vote-title{font-size:1.15rem;font-weight:450;color:#d0e6f0;margin-bottom:0.6rem}
+  html.light-mode .vote-title{color:#1a3a4e}
+  .vote-desc{font-size:0.93rem;color:rgba(200,215,230,.6);line-height:1.6;margin-bottom:1rem}
+  html.light-mode .vote-desc{color:rgba(30,60,80,.6)}
+  .vote-actions{display:flex;gap:0.8rem;flex-wrap:wrap}
+  .vote-btn{flex:1;min-width:120px;padding:0.6rem 1rem;border-radius:10px;font-size:0.95rem;font-family:inherit;cursor:pointer;transition:.2s;text-align:center;letter-spacing:2px;border:1px solid;display:flex;align-items:center;justify-content:center;gap:8px}
+  .vote-btn:disabled{cursor:default;opacity:0.7}
+  .vote-btn.yes{color:#5ad0a0;border-color:rgba(90,208,160,.2);background:rgba(90,208,160,.06)}
+  .vote-btn.yes:hover:not(:disabled){background:rgba(90,208,160,.12);border-color:rgba(90,208,160,.4)}
+  .vote-btn.yes.voted{background:rgba(90,208,160,.15);border-color:#5ad0a0}
+  .vote-btn.no{color:#e06060;border-color:rgba(224,96,96,.2);background:rgba(224,96,96,.06)}
+  .vote-btn.no:hover:not(:disabled){background:rgba(224,96,96,.12);border-color:rgba(224,96,96,.4)}
+  .vote-btn.no.voted{background:rgba(224,96,96,.15);border-color:#e06060}
+  .vote-meta{font-size:0.8rem;color:rgba(160,175,190,.4);letter-spacing:1px;margin-top:0.6rem;display:flex;justify-content:space-between;flex-wrap:wrap;gap:0.3rem}
+  html.light-mode .vote-meta{color:rgba(60,100,130,.4)}
+  .vote-bar{display:flex;height:4px;border-radius:2px;overflow:hidden;margin-top:0.6rem;background:rgba(160,175,190,.06)}
+  .vote-bar .fill-yes{background:#5ad0a0;transition:width .3s;height:100%}
+  .vote-bar .fill-no{background:#e06060;transition:width .3s;height:100%}
+  .vote-section-header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;padding:.5rem 0 1rem 0;border-bottom:1px solid rgba(160,175,190,.06);margin-bottom:.5rem}
+  .vote-section-header span{font-size:.9rem;opacity:.4;letter-spacing:1px}
+  .history-toggle{display:inline-flex;align-items:center;gap:6px;padding:.4rem 1rem;border-radius:8px;border:1px solid rgba(160,175,190,.1);background:rgba(200,215,230,.015);color:rgba(160,175,190,.5);cursor:pointer;font-family:inherit;font-size:.85rem;letter-spacing:1px;transition:.2s}
+  .history-toggle:hover{border-color:rgba(160,175,190,.25);color:rgba(160,175,190,.8);background:rgba(200,215,230,.03)}
+  .history-toggle span{display:inline-flex;align-items:center;justify-content:center;min-width:1.4rem;height:1.2rem;padding:0 .35rem;border-radius:6px;background:rgba(160,175,190,.08);font-size:.75rem}
+  .history-divider{padding:.8rem 0 .3rem 0;font-size:.82rem;opacity:.3;letter-spacing:2px;border-top:1px solid rgba(160,175,190,.06);margin-top:.5rem}
+  .vote-result{display:flex;gap:1rem;margin-bottom:.5rem;font-size:.9rem;padding:.4rem .6rem;border-radius:8px;background:rgba(200,215,230,.015);align-items:center}
+  html.light-mode .vote-result{background:rgba(200,215,230,.04)}
+  .vote-result.win-yes{background:rgba(90,208,160,.04)}
+  .vote-result.win-no{background:rgba(224,96,96,.04)}
+  .vote-result.win-choice{background:rgba(90,176,224,.04)}
+  html.light-mode .vote-result.win-yes{background:rgba(90,208,160,.06)}
+  html.light-mode .vote-result.win-no{background:rgba(224,96,96,.06)}
+  html.light-mode .vote-result.win-choice{background:rgba(30,120,180,.06)}
+  .vote-result span{display:flex;align-items:center;gap:6px}
+  .vote-result > span:first-child{color:#5ad0a0}
+  .vote-result > span:last-child{color:#e06060;justify-content:flex-end}
+  .vote-pct{font-size:.8rem;opacity:.5}
+  .win-yes span:first-child .vote-pct,.win-no span:last-child .vote-pct,.win-choice .vote-pct{opacity:1;font-weight:500}
+  .vote-btn.choice{flex:0;padding:.5rem 1.2rem;min-width:auto;color:#c8dce6;border-color:rgba(160,175,190,.08);background:rgba(200,215,230,.02);justify-content:flex-start}
+  .vote-btn.choice:hover:not(:disabled){border-color:rgba(160,175,190,.2);background:rgba(200,215,230,.04)}
+  .vote-btn.choice.voted{border-color:#5ab0e0;color:#5ab0e0;background:rgba(90,176,224,.06)}
+  .vote-btn.choice{flex-direction:column;align-items:stretch;gap:.4rem;padding:.6rem 1rem}
+  .vote-btn.choice span{text-align:center}
+  .opt-gallery{display:grid;grid-template-columns:repeat(2,1fr);gap:4px;width:100%}
+  .opt-gallery img{width:100%;height:auto;border-radius:4px;display:block}
+  .opt-thumbs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:.3rem}
+  .opt-thumbs img{width:44px;height:44px;object-fit:cover;border-radius:4px}
+  .vote-result-badge{display:flex;align-items:center;justify-content:center;padding:.5rem;margin-bottom:.8rem;border-radius:10px;font-size:1.2rem;font-weight:500;letter-spacing:2px;background:rgba(160,175,190,.03);color:rgba(160,175,190,.25);border:1px solid rgba(160,175,190,.04)}
+  .vote-result-badge.result-yes{background:rgba(90,208,160,.08);color:#5ad0a0;border-color:rgba(90,208,160,.15)}
+  .vote-result-badge.result-no{background:rgba(224,96,96,.08);color:#e06060;border-color:rgba(224,96,96,.15)}
+  .vote-result-badge.result-choice{background:rgba(90,176,224,.08);color:#5ab0e0;border-color:rgba(90,176,224,.15)}
+  .vote-result-badge.result-draw{background:rgba(224,176,90,.08);color:#e0b05a;border-color:rgba(224,176,90,.15)}
+  html.light-mode .vote-result-badge{background:rgba(160,175,190,.04)}
+  html.light-mode .vote-result-badge.result-yes{background:rgba(90,208,160,.1);color:#2a9a6a;border-color:rgba(90,208,160,.2)}
+  html.light-mode .vote-result-badge.result-no{background:rgba(224,96,96,.1);color:#c04040;border-color:rgba(224,96,96,.2)}
+  html.light-mode .vote-result-badge.result-choice{background:rgba(30,120,180,.1);color:#1a6a8a;border-color:rgba(30,120,180,.2)}
+  html.light-mode .vote-result-badge.result-draw{background:rgba(224,176,90,.1);color:#b08a30;border-color:rgba(224,176,90,.2)}
+  html.light-mode .vote-btn.choice{color:#1a3a4e;border-color:rgba(80,120,160,.08);background:rgba(200,215,230,.04)}
+  html.light-mode .vote-btn.choice:hover:not(:disabled){border-color:rgba(80,120,160,.2)}
+  html.light-mode .vote-btn.choice.voted{border-color:#1f7a9a;color:#1f7a9a;background:rgba(30,120,180,.06)}
+</style>
+</head>
+<body>
+
+<div class="grid-background"></div>
+
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-header"><span>📁 目录</span><button class="sidebar-close" id="sidebarClose"><i class="fas fa-times"></i></button></div>
+  <div class="sidebar-menu">
+    <a href="index.html"><i class="fas fa-home"></i> 首页</a>
+    <a href="server.html"><i class="fas fa-server"></i> 服务器</a>
+    <a href="members.html"><i class="fas fa-users"></i> 成员</a>
+    <a href="forum.html"><i class="fas fa-comment-dots"></i> 动态</a>
+    <a href="newcomer.html"><i class="fas fa-book-open"></i> 新人须知</a>
+    <a href="votes.html"><i class="fas fa-poll"></i> 投票</a>
+    <a href="legends.html"><i class="fas fa-crown"></i> 神人榜</a>
+    <a href="bans.html"><i class="fas fa-gavel"></i> 封挂榜</a>
+    <a href="download.html"><i class="fas fa-download"></i> 下载</a>
+    <a href="donate.html"><i class="fas fa-heart"></i> 捐赠</a>
+    <a href="search.html"><i class="fas fa-search"></i> 搜索</a>
+    <a href="about.html"><i class="fas fa-info-circle"></i> 关于</a>
+  </div>
+  <div style="margin-top:auto;opacity:.15;font-size:.7rem;padding-top:2rem;letter-spacing:1px;"><i class="fas fa-ellipsis-h"></i> v0.2</div>
+</nav>
+
+<div class="app">
+  <header class="navbar">
+    <div class="navbar-left"><button class="sidebar-toggle" id="sidebarToggle"><i class="fas fa-bars"></i></button><div class="server-name">建设世界</div></div>
+    <div class="navbar-right"><button class="theme-toggle" id="themeToggle"><i class="fas fa-moon" id="themeIcon"></i></button></div>
+  </header>
+
+  <main class="main-content">
+    <div class="page-container">
+      <div style="display:flex;flex-direction:column;flex:1;gap:1.2rem;padding-top:1rem;">
+        <div class="server-header" style="display:flex;align-items:center;justify-content:space-between;gap:.6rem;flex-wrap:wrap;">
+          <h2><i class="fas fa-poll"></i> 投票</h2>
+          <a href="search.html" style="display:inline-flex;align-items:center;gap:8px;padding:.4rem 1.1rem;border-radius:10px;border:1px solid rgba(90,176,224,.2);background:rgba(90,176,224,.06);color:#7bb3d9;text-decoration:none;font-size:.85rem;letter-spacing:1px;transition:.2s;font-family:inherit;" onmouseover="this.style.background='rgba(90,176,224,.14)'" onmouseout="this.style.background='rgba(90,176,224,.06)'"><i class="fas fa-search"></i> 全站搜索</a>
+        </div>
+        <div id="voteContainer">
+          <div class="server-status-card" style="text-align:center;padding:3rem;">
+            <i class="fas fa-spinner fa-pulse" style="font-size:2rem;opacity:0.3;"></i>
+            <div style="margin-top:1rem;opacity:0.3;font-size:0.9rem;">加载中...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div class="footer-copy">© 2077 建设世界. 并不保留所有权利。</div>
+</div>
+
+<script>
+const API_BASE = location.hostname === 'sh.jssj.cc.cd' ? 'https://shapi.jssj.cc.cd' : 'https://api.jssj.cc.cd';
+const SHAPI_BASE = 'https://shapi.jssj.cc.cd';
+async function fetchApi(path, options) {
+  try {
+    const resp = await fetch(API_BASE + path, options);
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    return resp;
+  } catch (e) {
+    if (API_BASE !== SHAPI_BASE) {
+      const fallback = await fetch(SHAPI_BASE + path, options);
+      if (!fallback.ok) throw new Error('HTTP ' + fallback.status);
+      return fallback;
+    }
+    throw e;
+  }
+}
+
+
+let showHistory = false;
+
+function esc(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+function formatDesc(text) {
+  if (!text) return '';
+  // 先转义全部文本，再把图床链接还原成图片标签（IMG_ALLOW_HOSTS 白名单）
+  let t = esc(text);
+  if (t.includes('img.remit.ee')) t = t.replace(/https?:\/\/img\.remit\.ee[^\s<>"]+/g, function(u) { return '<img src="' + API_BASE + '/api/img?url=' + encodeURIComponent(u) + '" style="max-width:100%;height:auto;border-radius:8px;margin:.4rem 0;display:block;" loading="lazy">'; });
+  return t;
+}
+
+function renderAgreeCard(v, active) {
+  const total = (v.yesCount || 0) + (v.noCount || 0);
+  const yesPct = total > 0 ? ((v.yesCount || 0) / total * 100).toFixed(0) : 0;
+  const noPct = total > 0 ? ((v.noCount || 0) / total * 100).toFixed(0) : 0;
+  const hasVoted = v.myVote || null;
+  if (active) {
+    return '<div class="vote-card" id="vote-' + esc(v.id) + '"><div class="vote-title">' + esc(v.title) + '</div>' + (v.description ? '<div class="vote-desc">' + formatDesc(v.description) + '</div>' : '') + '<div class="vote-actions"><button class="vote-btn yes' + (hasVoted === 'yes' ? ' voted' : '') + '" onclick="castVote(\'' + esc(v.id) + '\',\'yes\')"' + (hasVoted ? ' disabled' : '') + '><i class="fas fa-check"></i> 同意 (' + (v.yesCount || 0) + ')</button><button class="vote-btn no' + (hasVoted === 'no' ? ' voted' : '') + '" onclick="castVote(\'' + esc(v.id) + '\',\'no\')"' + (hasVoted ? ' disabled' : '') + '><i class="fas fa-times"></i> 反对 (' + (v.noCount || 0) + ')</button></div>' + (total > 0 ? '<div class="vote-bar"><div class="fill-yes" style="width:' + yesPct + '%"></div><div class="fill-no" style="width:' + noPct + '%"></div></div>' : '') + '<div class="vote-meta"><span>' + esc((v.date || '').split('T')[0]) + '</span><span>' + (v.deadline ? '截止 ' + esc(v.deadline) : '') + (total > 0 ? ' · ' + total + ' 票' : '') + '</span></div></div>';
+  }
+  const yesWin = (v.yesCount || 0) > (v.noCount || 0);
+  const noWin = (v.noCount || 0) > (v.yesCount || 0);
+  const draw = !yesWin && !noWin && total > 0;
+  const resultLabel = yesWin ? '✓同意' : noWin ? '✗反对' : draw ? '—平局' : '';
+  return '<div class="vote-card" id="vote-' + esc(v.id) + '"><div class="vote-title">' + esc(v.title) + '</div><div class="vote-result-badge' + (yesWin ? ' result-yes' : '') + (noWin ? ' result-no' : '') + (draw ? ' result-draw' : '') + '">' + resultLabel + '</div>' + (v.description ? '<div class="vote-desc">' + formatDesc(v.description) + '</div>' : '') + '<div class="vote-result' + (yesWin ? ' win-yes' : '') + (noWin ? ' win-no' : '') + '"><span>同意 ' + (v.yesCount || 0) + ' <span class="vote-pct">' + yesPct + '%</span></span><span>反对 ' + (v.noCount || 0) + ' <span class="vote-pct">' + noPct + '%</span></span></div>' + (total > 0 ? '<div class="vote-bar"><div class="fill-yes" style="width:' + yesPct + '%"></div><div class="fill-no" style="width:' + noPct + '%"></div></div>' : '') + '<div class="vote-meta"><span>' + esc((v.date || '').split('T')[0]) + '</span><span>' + total + ' 票</span></div></div>';
+}
+
+function parseOpt(s) {
+  const i = s.lastIndexOf('|');
+  if (i > 0) {
+    const label = s.slice(0, i).trim();
+    const imgs = s.slice(i + 1).split(',').map(u => u.trim()).filter(u => u.startsWith('http')).map(u => u.includes('img.remit.ee') ? API_BASE + '/api/img?url=' + encodeURIComponent(u) : u);
+    return { label, imgs, key: s };
+  }
+  return { label: s, imgs: [], key: s };
+}
+
+function renderChoiceCard(v, active) {
+  const hasVoted = v.myVote || null;
+  const total = Object.values(v.counts || {}).reduce((a, b) => a + b, 0);
+  const parsed = v.options.map(parseOpt);
+  function imgGrid(imgs) { return imgs.length > 0 ? '<div class="opt-gallery">' + imgs.map(u => "<img src='" + esc(u.replace(/'/g, '')) + "' loading='lazy'>").join('') + '</div>' : ''; }
+  function thumbs(imgs) { return imgs.length > 0 ? '<div class="opt-thumbs">' + imgs.map(u => "<img src='" + esc(u.replace(/'/g, '')) + "' loading='lazy'>").join('') + '</div>' : ''; }
+  if (active) {
+    let btns = parsed.map(p => {
+      const selected = hasVoted === p.key;
+      const count = v.counts?.[p.key] || 0;
+      const optJs = esc(p.key).replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+      return '<button class="vote-btn choice' + (selected ? ' voted' : '') + '" onclick="castVote(\'' + esc(v.id) + '\',\'' + optJs + '\')"' + (hasVoted ? ' disabled' : '') + '>' + imgGrid(p.imgs) + '<span>' + esc(p.label) + (total > 0 ? ' (' + count + ')' : '') + '</span></button>';
+    }).join('');
+    return '<div class="vote-card" id="vote-' + esc(v.id) + '"><div class="vote-title">' + esc(v.title) + '</div>' + (v.description ? '<div class="vote-desc">' + formatDesc(v.description) + '</div>' : '') + '<div class="vote-actions" style="flex-direction:column;">' + btns + '</div>' + (total > 0 ? parsed.map(p => { const pct = total > 0 ? ((v.counts?.[p.key] || 0) / total * 100).toFixed(0) : 0; return '<div style="display:flex;align-items:center;gap:.5rem;margin-top:.3rem;font-size:.85rem;"><span style="min-width:4rem;opacity:.7;">' + esc(p.label) + '</span><div style="flex:1;height:6px;border-radius:3px;background:rgba(160,175,190,.06);overflow:hidden;"><div style="width:' + pct + '%;height:100%;border-radius:3px;background:#5ab0e0;transition:width .3s;"></div></div><span style="min-width:2.5rem;text-align:right;opacity:.5;font-size:.8rem;">' + pct + '%</span></div>'; }).join('') : '') + '<div class="vote-meta"><span>' + esc((v.date || '').split('T')[0]) + '</span><span>' + (v.deadline ? '截止 ' + esc(v.deadline) : '') + (total > 0 ? ' · ' + total + ' 票' : '') + '</span></div></div>';
+  }
+  let maxCount = 0, winnerKey = '', draw = false;
+  for (const p of parsed) { const c = v.counts?.[p.key] || 0; if (c > maxCount) maxCount = c; }
+  const winners = parsed.filter(p => (v.counts?.[p.key] || 0) === maxCount && maxCount > 0);
+  if (winners.length === 1) winnerKey = winners[0].key;
+  if (winners.length > 1 && total > 0) draw = true;
+  const winLabel = winners.length === 1 ? winners[0].label : '';
+  const resultLabel = winLabel ? '✓' + esc(winLabel) : draw ? '—平局' : '';
+  return '<div class="vote-card" id="vote-' + esc(v.id) + '"><div class="vote-title">' + esc(v.title) + '</div><div class="vote-result-badge' + (winLabel ? ' result-choice' : '') + (draw ? ' result-draw' : '') + '">' + resultLabel + '</div>' + (v.description ? '<div class="vote-desc">' + formatDesc(v.description) + '</div>' : '') + (total > 0 ? parsed.map(p => { const pct = ((v.counts?.[p.key] || 0) / total * 100).toFixed(0); const isWinner = p.key === winnerKey && !draw; return '<div class="vote-result' + (isWinner ? ' win-choice' : '') + '" style="flex-direction:column;align-items:stretch;gap:.3rem;"><div style="display:flex;align-items:center;justify-content:space-between;"><span>' + thumbs(p.imgs) + esc(p.label) + ' <span class="vote-pct">' + (v.counts?.[p.key] || 0) + ' 票</span></span><span style="opacity:.6;">' + pct + '%</span></div></div>'; }).join('') : '<div style="opacity:.3;text-align:center;padding:.5rem 0;">暂无投票</div>') + '<div class="vote-meta"><span>' + esc((v.date || '').split('T')[0]) + '</span><span>' + (total > 0 ? total + ' 票' : '') + '</span></div></div>';
+}
+
+async function loadVotes() {
+  const container = document.getElementById('voteContainer');
+  try {
+    const resp = await fetchApi('/api/votes');
+    const data = await resp.json();
+    if (!data.success || !data.votes || data.votes.length === 0) {
+      container.innerHTML = '<div class="server-status-card" style="text-align:center;padding:3rem;"><div style="opacity:0.3;">暂无投票</div></div>';
+      return;
+    }
+
+    const today = (function(){ const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); })();
+    data.votes.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+    const activeVotes = data.votes.filter(v => v.active && (!v.deadline || v.deadline >= today));
+    const historyVotes = data.votes.filter(v => !v.active || (v.deadline && v.deadline < today));
+
+    // 搜索结果深链接或没有进行中的投票时，自动展开历史
+    if (location.hash && location.hash.startsWith('#vote-')) showHistory = true;
+    if (activeVotes.length === 0 && historyVotes.length > 0) showHistory = true;
+
+    let html = '';
+
+    if (activeVotes.length > 0 || historyVotes.length > 0) {
+      html += '<div class="vote-section-header">';
+      if (activeVotes.length > 0) html += '<span>进行中的投票</span>';
+      if (historyVotes.length > 0 && activeVotes.length > 0) {
+        // 有进行中的才显示折叠按钮
+        html += '<button onclick="toggleHistory()" class="history-toggle" id="historyToggleBtn">📜 历史投票 <span id="historyCount">' + historyVotes.length + '</span></button>';
+      } else if (historyVotes.length > 0 && activeVotes.length === 0) {
+        html += '<span style="opacity:.5;">📜 历史投票</span>';
+      }
+      html += '</div>';
+    }
+
+    for (const v of activeVotes) {
+      html += v.type === 'choice' ? renderChoiceCard(v, true) : renderAgreeCard(v, true);
+    }
+
+    if (historyVotes.length > 0) {
+      html += '<div id="historySection" style="display:' + (showHistory ? 'block' : 'none') + ';">';
+      html += '<div class="history-divider">📜 历史投票</div>';
+      for (const v of historyVotes) {
+        html += v.type === 'choice' ? renderChoiceCard(v, false) : renderAgreeCard(v, false);
+      }
+      html += '</div>';
+    }
+
+    container.innerHTML = html;
+    // 深链接：从搜索结果带 #vote-id 跳转时，滚动到对应投票并高亮
+    if (location.hash && location.hash.startsWith('#vote-')) {
+      setTimeout(() => {
+        const el = document.getElementById(location.hash.slice(1));
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          el.style.outline = '2px solid rgba(90,176,224,.55)';
+          el.style.outlineOffset = '2px';
+          setTimeout(() => { el.style.outline = 'none'; }, 3000);
+        }
+      }, 150);
+    }
+  } catch (e) {
+    console.error('[投票] 加载失败:', e);
+    container.innerHTML = '<div class="server-status-card" style="text-align:center;padding:3rem;"><div style="opacity:0.3;">加载失败</div></div>';
+  }
+}
+
+function toggleHistory() {
+  showHistory = !showHistory;
+  const section = document.getElementById('historySection');
+  const btn = document.getElementById('historyToggleBtn');
+  if (section) section.style.display = showHistory ? 'block' : 'none';
+  if (btn) btn.style.borderColor = showHistory ? 'rgba(90,176,224,.3)' : '';
+}
+
+async function castVote(id, option) {
+  try {
+    const resp = await fetchApi('/api/votes/' + id + '/vote', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ option }),
+    });
+    const data = await resp.json();
+    if (data.success) {
+      loadVotes();
+    } else {
+      alert(data.error || '投票失败');
+    }
+  } catch {
+    alert('网络错误');
+  }
+}
+
+loadVotes();
+
+// Sidebar & theme
+const sidebar=document.getElementById('sidebar'),st=document.getElementById('sidebarToggle'),sc=document.getElementById('sidebarClose'),tt=document.getElementById('themeToggle'),ti=document.getElementById('themeIcon'),bd=document.body;
+function openSidebar(){sidebar.classList.add('open')}
+function closeSidebar(){sidebar.classList.remove('open')}
+st.addEventListener('click',openSidebar);sc.addEventListener('click',closeSidebar);
+document.addEventListener('click',function(e){if(sidebar.classList.contains('open')&&!sidebar.contains(e.target)&&e.target!==st&&!st.contains(e.target))closeSidebar()});
+sidebar.addEventListener('click',function(e){e.stopPropagation()});
+var savedTheme=localStorage.getItem('theme');if(savedTheme==='light'){bd.classList.add('light-mode');ti.className='fas fa-sun'}else if(!savedTheme&&!window.matchMedia('(prefers-color-scheme:dark)').matches){bd.classList.add('light-mode');ti.className='fas fa-sun';localStorage.setItem('theme','light')}
+tt.addEventListener('click',function(){bd.classList.toggle('light-mode');document.documentElement.classList.toggle('light-mode');var isLight=bd.classList.contains('light-mode');localStorage.setItem('theme',isLight?'light':'dark');ti.className=isLight?'fas fa-sun':'fas fa-moon'});
+</script>
+</body>
+</html>

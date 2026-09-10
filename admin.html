@@ -1,0 +1,1510 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>建设世界 · 管理后台</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0b0d10;
+      color: #eef2f5;
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    h1 {
+      font-size: 2rem;
+      font-weight: 500;
+      letter-spacing: 2px;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(135deg, #d0e8f5, #7bb3d9);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .subtitle {
+      color: rgba(160, 175, 190, 0.5);
+      margin-bottom: 2rem;
+      font-size: 0.9rem;
+    }
+    .badge-online {
+      display: inline-block;
+      background: rgba(90, 176, 224, 0.15);
+      border: 1px solid rgba(90, 176, 224, 0.2);
+      color: #5ab0e0;
+      font-size: 0.7rem;
+      padding: 0.1rem 0.8rem;
+      border-radius: 20px;
+      margin-left: 0.8rem;
+      letter-spacing: 0.5px;
+      vertical-align: middle;
+    }
+    .card {
+      background: rgba(16, 24, 32, 0.4);
+      border: 1px solid rgba(160, 175, 190, 0.08);
+      border-radius: 16px;
+      padding: 1.8rem;
+      margin-bottom: 2rem;
+      backdrop-filter: blur(4px);
+    }
+    .card h2 {
+      font-size: 1.2rem;
+      font-weight: 400;
+      letter-spacing: 1px;
+      color: #b8d0dd;
+      margin-bottom: 1.2rem;
+    }
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      color: rgba(160, 175, 190, 0.6);
+      margin-bottom: 0.3rem;
+      letter-spacing: 0.5px;
+    }
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 0.7rem 1rem;
+      background: rgba(20, 30, 40, 0.4);
+      border: 1px solid rgba(160, 175, 190, 0.1);
+      border-radius: 10px;
+      color: #eef2f5;
+      font-size: 0.95rem;
+      font-family: inherit;
+      transition: 0.2s;
+    }
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #5ab0e0;
+      box-shadow: 0 0 20px rgba(90, 176, 224, 0.05);
+    }
+    .form-group textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    .btn {
+      padding: 0.7rem 2rem;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: 0.2s;
+      font-family: inherit;
+      letter-spacing: 0.5px;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #5ab0e0, #3a8aba);
+      color: #fff;
+    }
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 20px rgba(90, 176, 224, 0.2);
+    }
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .btn-danger {
+      background: rgba(200, 60, 60, 0.2);
+      color: #e06060;
+      border: 1px solid rgba(200, 60, 60, 0.15);
+    }
+    .btn-danger:hover {
+      background: rgba(200, 60, 60, 0.3);
+    }
+    .post-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+    .post-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.8rem 1.2rem;
+      background: rgba(20, 30, 40, 0.3);
+      border: 1px solid rgba(160, 175, 190, 0.04);
+      border-radius: 10px;
+      transition: 0.2s;
+    }
+    .post-item:hover {
+      border-color: rgba(160, 175, 190, 0.08);
+    }
+    .post-item .info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .post-item .info .title {
+      font-weight: 450;
+      color: #d0e6f0;
+    }
+    .post-item .info .meta {
+      font-size: 0.8rem;
+      color: rgba(160, 175, 190, 0.4);
+    }
+    .post-item .info .pin-badge {
+      font-size: 0.65rem;
+      background: rgba(90, 176, 224, 0.12);
+      border: 1px solid rgba(90, 176, 224, 0.15);
+      color: #5ab0e0;
+      padding: 0.05rem 0.6rem;
+      border-radius: 12px;
+    }
+    .post-item .actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+    .post-item .actions .btn {
+      padding: 0.3rem 0.8rem;
+      font-size: 0.8rem;
+    }
+    .empty-state {
+      text-align: center;
+      color: rgba(160, 175, 190, 0.2);
+      padding: 2rem 0;
+      font-size: 0.9rem;
+      letter-spacing: 1px;
+    }
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      padding: 0.8rem 1.5rem;
+      border-radius: 12px;
+      background: rgba(16, 24, 32, 0.95);
+      border: 1px solid rgba(160, 175, 190, 0.1);
+      color: #eef2f5;
+      font-size: 0.9rem;
+      backdrop-filter: blur(10px);
+      transform: translateY(100px);
+      opacity: 0;
+      transition: 0.3s ease;
+      z-index: 100;
+    }
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    .toast.success {
+      border-color: rgba(90, 176, 224, 0.3);
+    }
+    .toast.error {
+      border-color: rgba(200, 60, 60, 0.3);
+    }
+
+    #authOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+    #authOverlay.hidden {
+      display: none;
+    }
+    .auth-box {
+      background: rgba(16, 24, 32, 0.95);
+      border: 1px solid rgba(160, 175, 190, 0.1);
+      border-radius: 20px;
+      padding: 2.5rem 3rem;
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+    }
+    .auth-box .lock-icon {
+      font-size: 3rem;
+      color: #5ab0e0;
+      margin-bottom: 1rem;
+    }
+    .auth-box h2 {
+      font-size: 1.4rem;
+      font-weight: 400;
+      letter-spacing: 2px;
+      color: #b8d0dd;
+      margin-bottom: 0.5rem;
+    }
+    .auth-box p {
+      color: rgba(160, 175, 190, 0.4);
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
+    }
+    .auth-box input {
+      width: 100%;
+      padding: 0.8rem 1rem;
+      background: rgba(20, 30, 40, 0.4);
+      border: 1px solid rgba(160, 175, 190, 0.1);
+      border-radius: 10px;
+      color: #eef2f5;
+      font-size: 1rem;
+      font-family: inherit;
+      margin-bottom: 1rem;
+      text-align: center;
+      letter-spacing: 4px;
+    }
+    .auth-box input:focus {
+      outline: none;
+      border-color: #5ab0e0;
+    }
+    .auth-box .auth-error {
+      color: #e06060;
+      font-size: 0.85rem;
+      margin-bottom: 0.8rem;
+      min-height: 1.5rem;
+    }
+    .auth-box .btn {
+      width: 100%;
+      padding: 0.8rem;
+      font-size: 1rem;
+    }
+
+    @media (max-width: 640px) {
+      body {
+        padding: 1rem;
+      }
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+      .post-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+      }
+      .post-item .actions {
+        width: 100%;
+        justify-content: flex-end;
+      }
+      .auth-box {
+        padding: 2rem 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+<script src="offline/offline.js"></script><script>history.scrollRestoration='manual';window.scrollTo(0,0);</script>
+
+
+  <div id="authOverlay">
+    <div class="auth-box">
+      <div class="lock-icon">🔐</div>
+      <h2>管理后台</h2>
+      <p>请输入管理员密钥以继续</p>
+      <input type="password" id="authInput" placeholder="输入密码">
+      <div class="auth-error" id="authError"></div>
+      <button class="btn btn-primary" id="authBtn">验证身份</button>
+    </div>
+  </div>
+
+  <div id="mainContent" style="display: none;">
+    <div class="container">
+      <h1>
+        ⚙️ 建设世界 · 管理后台
+        <span class="badge-online">🌐 在线模式</span>
+        <button onclick="logout()" style="float:right;background:rgba(200,60,60,.15);border:1px solid rgba(200,60,60,.2);color:#e06060;padding:0.3rem 1rem;border-radius:8px;cursor:pointer;font-size:0.8rem;font-family:inherit;">退出登录</button>
+      </h1>
+      <div class="subtitle" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;">
+        <span>管理动态 · 投票 · 神人榜</span>
+        <span style="display:flex;gap:0.5rem;">
+          <button class="btn btn-primary" style="padding:0.4rem 1.2rem;font-size:0.85rem;background:rgba(90,176,224,.1);border:1px solid rgba(90,176,224,.15);color:#5ab0e0;border-radius:8px;" onclick="exportAll()">📦 导出全部数据</button>
+          <button class="btn btn-primary" style="padding:0.4rem 1.2rem;font-size:0.85rem;background:rgba(90,208,160,.1);border:1px solid rgba(90,208,160,.15);color:#5ad0a0;border-radius:8px;" onclick="document.getElementById('importFile').click()">📥 导入数据</button>
+          <input type="file" id="importFile" accept=".json,application/json" style="display:none;" onchange="importData(this)">
+        </span>
+      </div>
+
+      <div style="display:flex;gap:0.5rem;margin-bottom:1.5rem;flex-wrap:wrap;">
+        <button class="tab-btn active" data-tab="posts" onclick="switchTab('posts')" style="flex:1;min-width:80px;padding:0.5rem 1rem;border-radius:10px;border:1px solid rgba(160,175,190,.1);background:rgba(90,176,224,.1);color:#7bb3d9;cursor:pointer;font-family:inherit;font-size:0.85rem;letter-spacing:1px;transition:.2s;">📋 动态</button>
+        <button class="tab-btn" data-tab="votes" onclick="switchTab('votes')" style="flex:1;min-width:80px;padding:0.5rem 1rem;border-radius:10px;border:1px solid rgba(160,175,190,.08);background:transparent;color:rgba(160,175,190,.5);cursor:pointer;font-family:inherit;font-size:0.85rem;letter-spacing:1px;transition:.2s;">📊 投票</button>
+        <button class="tab-btn" data-tab="stories" onclick="switchTab('stories')" style="flex:1;min-width:80px;padding:0.5rem 1rem;border-radius:10px;border:1px solid rgba(160,175,190,.08);background:transparent;color:rgba(160,175,190,.5);cursor:pointer;font-family:inherit;font-size:0.85rem;letter-spacing:1px;transition:.2s;">👑 神人榜</button>
+        <button class="tab-btn" data-tab="bans" onclick="switchTab('bans')" style="flex:1;min-width:80px;padding:0.5rem 1rem;border-radius:10px;border:1px solid rgba(160,175,190,.08);background:transparent;color:rgba(160,175,190,.5);cursor:pointer;font-family:inherit;font-size:0.85rem;letter-spacing:1px;transition:.2s;">🚫 封挂榜</button>
+        <button class="tab-btn" data-tab="donors" onclick="switchTab('donors')" style="flex:1;min-width:80px;padding:0.5rem 1rem;border-radius:10px;border:1px solid rgba(160,175,190,.08);background:transparent;color:rgba(160,175,190,.5);cursor:pointer;font-family:inherit;font-size:0.85rem;letter-spacing:1px;transition:.2s;">💝 捐赠名单</button>
+        <button class="tab-btn" data-tab="downloads" onclick="switchTab('downloads')" style="flex:1;min-width:80px;padding:0.5rem 1rem;border-radius:10px;border:1px solid rgba(160,175,190,.08);background:transparent;color:rgba(160,175,190,.5);cursor:pointer;font-family:inherit;font-size:0.85rem;letter-spacing:1px;transition:.2s;">📥 下载</button>
+        <button class="tab-btn" data-tab="images" onclick="switchTab('images')" style="flex:1;min-width:80px;padding:0.5rem 1rem;border-radius:10px;border:1px solid rgba(160,175,190,.08);background:transparent;color:rgba(160,175,190,.5);cursor:pointer;font-family:inherit;font-size:0.85rem;letter-spacing:1px;transition:.2s;">🖼️ 图床</button>
+        <button class="tab-btn" data-tab="stats" onclick="switchTab('stats')" style="flex:1;min-width:80px;padding:0.5rem 1rem;border-radius:10px;border:1px solid rgba(160,175,190,.08);background:transparent;color:rgba(160,175,190,.5);cursor:pointer;font-family:inherit;font-size:0.85rem;letter-spacing:1px;transition:.2s;">📊 流量</button>
+        <button class="tab-btn" data-tab="backups" onclick="switchTab('backups')" style="flex:1;min-width:80px;padding:0.5rem 1rem;border-radius:10px;border:1px solid rgba(160,175,190,.08);background:transparent;color:rgba(160,175,190,.5);cursor:pointer;font-family:inherit;font-size:0.85rem;letter-spacing:1px;transition:.2s;">💾 备份</button>
+        <button class="tab-btn" data-tab="oplog" onclick="switchTab('oplog')" style="flex:1;min-width:80px;padding:0.5rem 1rem;border-radius:10px;border:1px solid rgba(160,175,190,.08);background:transparent;color:rgba(160,175,190,.5);cursor:pointer;font-family:inherit;font-size:0.85rem;letter-spacing:1px;transition:.2s;">📜 日志</button>
+      </div>
+
+      <!-- 动态 -->
+      <div class="tab-content" id="tab-posts">
+        <div class="card"><h2>📋 所有动态</h2><div id="postList" class="post-list"><div class="empty-state">加载中...</div></div></div>
+        <div class="card">
+          <h2>📝 发布新动态</h2>
+          <form id="postForm">
+            <div class="form-row"><div class="form-group"><label>标题 *</label><input type="text" id="postTitle" placeholder="输入帖子标题" maxlength="100" required></div><div class="form-group"><label>发布人 *</label><input type="text" id="postAuthor" placeholder="作者名称" maxlength="50" required></div></div>
+            <div class="form-group"><label>内容摘要</label><textarea id="postExcerpt" placeholder="简短摘要（选填）" rows="2" maxlength="300"></textarea></div>
+            <div class="form-group"><label>完整内容</label><textarea id="postContent" placeholder="帖子正文内容" rows="3" maxlength="5000"></textarea></div>
+            <div class="form-group"><label>图片链接（可选，用于资金流向公示等）</label><textarea id="postImages" placeholder="图片直链，每行一张（可去图床复制链接）" rows="2" maxlength="2000"></textarea></div>
+            <div class="form-row"><div class="form-group"><label>是否置顶</label><select id="postPinned"><option value="false">否</option><option value="true">是</option></select></div><div class="form-group" style="display:flex;align-items:flex-end;justify-content:flex-end;"><button type="submit" class="btn btn-primary">发布帖子</button></div></div>
+          </form>
+        </div>
+      </div>
+
+      <!-- 投票 -->
+      <div class="tab-content" id="tab-votes" style="display:none;">
+        <div class="card"><h2>📋 所有投票</h2><div id="voteList" class="post-list"><div class="empty-state">加载中...</div></div></div>
+        <div class="card">
+          <h2>📝 创建新投票</h2>
+          <form id="voteForm">
+            <div class="form-group"><label>投票标题 *</label><input type="text" id="voteTitle" placeholder="输入投票标题" maxlength="100" required></div>
+            <div class="form-group"><label>投票描述</label><textarea id="voteDesc" placeholder="描述投票内容" rows="2" maxlength="500"></textarea></div>
+            <div class="form-row">
+              <div class="form-group"><label>投票类型</label><select id="voteType"><option value="agree">同意 / 反对</option><option value="choice">选择</option></select></div>
+              <div class="form-group"><label>截止日期（选填）</label><input type="date" id="voteDeadline"></div>
+            </div>
+            <div class="form-group" id="voteOptionsGroup" style="display:none;"><label>选项（每行一个）</label><textarea id="voteOptions" placeholder="选项文字（支持 | 符号）| 图片链接1,图片链接2&#10;最后一组竖杠后面放图片链接，逗号分隔多张" rows="3" maxlength="1000"></textarea></div>
+            <div class="form-row"><div class="form-group"></div><div class="form-group" style="display:flex;align-items:flex-end;justify-content:flex-end;"><button type="submit" class="btn btn-primary">创建投票</button></div></div>
+          </form>
+          <script>document.getElementById('voteType')?.addEventListener('change',function(){document.getElementById('voteOptionsGroup').style.display=this.value==='choice'?'block':'none'});</script>
+        </div>
+      </div>
+
+      <!-- 神人榜 -->
+      <div class="tab-content" id="tab-stories" style="display:none;">
+        <div class="card"><h2>📋 神人榜</h2><div id="storyList" class="post-list"><div class="empty-state">加载中...</div></div></div>
+        <div class="card">
+          <h2>📝 添加新记录</h2>
+          <form id="storyForm">
+            <div class="form-group"><label>标题 *</label><input type="text" id="storyTitle" placeholder="事件标题" maxlength="100" required></div>
+            <div class="form-group"><label>事件描述 *</label><textarea id="storyText" placeholder="描述事件经过" rows="3" maxlength="2000" required></textarea></div>
+            <div class="form-group"><label>图片链接（可选）</label><textarea id="storyImageUrls" placeholder="图片/下载直链，每行一张，自动显示为图片" rows="3" maxlength="2000"></textarea></div>
+            <div class="form-row"><div class="form-group"></div><div class="form-group" style="display:flex;align-items:flex-end;justify-content:flex-end;"><button type="submit" class="btn btn-primary">添加记录</button></div></div>
+          </form>
+        </div>
+      </div>
+
+      <!-- 封挂榜 -->
+      <div class="tab-content" id="tab-bans" style="display:none;">
+        <div class="card"><h2>🚫 封挂榜</h2><div id="banList" class="post-list"><div class="empty-state">加载中...</div></div></div>
+        <div class="card">
+          <h2>📝 添加封禁记录</h2>
+          <form id="banForm">
+            <div class="form-row">
+              <div class="form-group"><label>玩家名 *</label><input type="text" id="banPlayer" placeholder="被封玩家" maxlength="32" required></div>
+              <div class="form-group"><label>封禁日期</label><input type="date" id="banDate"></div>
+            </div>
+            <div class="form-group"><label>原因</label><textarea id="banReason" placeholder="封禁原因" rows="2" maxlength="300"></textarea></div>
+            <div class="form-row"><div class="form-group"></div><div class="form-group" style="display:flex;align-items:flex-end;justify-content:flex-end;"><button type="submit" class="btn btn-primary">添加记录</button></div></div>
+          </form>
+        </div>
+      </div>
+
+      <!-- 捐赠名单 -->
+      <div class="tab-content" id="tab-donors" style="display:none;">
+        <div class="card"><h2>💝 捐赠名单</h2><div id="donorList" class="post-list"><div class="empty-state">加载中...</div></div></div>
+        <div class="card">
+          <h2>📝 添加捐赠人</h2>
+          <form id="donorForm">
+            <div class="form-group"><label>名字 *</label><input type="text" id="donorName" placeholder="捐赠人名字" maxlength="50" required></div>
+            <div class="form-row"><div class="form-group"></div><div class="form-group" style="display:flex;align-items:flex-end;justify-content:flex-end;"><button type="submit" class="btn btn-primary">添加捐赠人</button></div></div>
+          </form>
+        </div>
+      </div>
+
+      <!-- 下载中心 -->
+      <div class="tab-content" id="tab-downloads" style="display:none;">
+        <div class="card"><h2>📥 下载中心</h2><div id="downloadList" class="post-list"><div class="empty-state">加载中...</div></div></div>
+        <div class="card">
+          <h2>📝 添加下载项</h2>
+          <form id="downloadForm">
+            <div class="form-row">
+              <div class="form-group"><label>名称 *</label><input type="text" id="downloadName" placeholder="如：建设世界客户端" maxlength="100" required></div>
+              <div class="form-group"><label>文件大小（选填）</label><input type="text" id="downloadSize" placeholder="如：128MB / 1.2GB" maxlength="30"></div>
+            </div>
+            <div class="form-group"><label>上传文件（直接传到服务器，推荐）</label><input type="file" id="downloadFile"></div>
+<div style="font-size:.8rem;color:rgba(224,176,90,.75);line-height:1.7;margin:-.3rem 0 .6rem;">离线版提示：这个站点没有后端，无法上传文件。请在「或填外部下载链接」里填 GitHub Release 地址（大文件走 Release）。</div>
+            <div class="form-group" id="downloadProgressBox" style="display:none;">
+              <label>上传进度</label>
+              <div style="display:flex;align-items:center;gap:.8rem;">
+                <div style="flex:1;height:10px;border-radius:5px;background:rgba(160,175,190,.12);overflow:hidden;"><div id="downloadProgressBar" style="height:100%;width:0%;border-radius:5px;background:linear-gradient(90deg,#5ab0e0,#3a8aba);transition:width .15s;"></div></div>
+                <span id="downloadProgressText" style="font-size:.82rem;color:rgba(160,175,190,.7);white-space:nowrap;">0%</span>
+              </div>
+              <div style="font-size:.75rem;opacity:.5;margin-top:.3rem;" id="downloadProgressSpeed"></div>
+            </div>
+            <div class="form-group"><label>或填外部下载链接（选填，二者填一个）</label><input type="text" id="downloadUrl" placeholder="https://外部地址 或留空用上传文件" maxlength="500"></div>
+            <div class="form-group"><label>描述</label><textarea id="downloadDesc" placeholder="描述这个文件是什么、适用版本等" rows="2" maxlength="500"></textarea></div>
+            <div class="form-row"><div class="form-group"></div><div class="form-group" style="display:flex;align-items:flex-end;justify-content:flex-end;"><button type="submit" class="btn btn-primary" id="downloadSubmitBtn">上传并添加</button></div></div>
+          </form>
+        </div>
+        <div class="card"><h2>🗂️ 已上传文件</h2><div id="downloadFileList" class="post-list"><div class="empty-state">加载中...</div></div></div>
+      </div>
+
+      <!-- 图床 -->
+      <div class="tab-content" id="tab-images" style="display:none;">
+        <div class="card">
+          <h2>📤 上传图片</h2>
+          <form id="uploadForm">
+            <div class="form-group"><label>选择图片（可多选，支持 png/jpg/gif/webp，每张最大 20MB）</label><input type="file" id="uploadFile" accept="image/*" multiple required></div>
+            <div class="form-group"><label>上传结果：</label><div id="uploadResult" style="display:flex;flex-direction:column;gap:0.3rem;max-height:220px;overflow-y:auto;"></div></div>
+            <div class="form-row"><div class="form-group"></div><div class="form-group" style="display:flex;align-items:flex-end;justify-content:flex-end;"><button type="submit" class="btn btn-primary" id="uploadBtn">上传图片</button></div></div>
+          </form>
+        </div>
+        <div class="card"><h2>🖼️ 已上传图片</h2><div id="imageList" class="post-list"><div class="empty-state">加载中...</div></div></div>
+      </div>
+
+      <!-- 流量统计 -->
+      <div class="tab-content" id="tab-stats" style="display:none;">
+        <div class="card">
+          <h2>📊 流量总览</h2>
+          <div style="display:flex;gap:1rem;flex-wrap:wrap;">
+            <div style="flex:1;min-width:140px;background:rgba(20,30,40,.3);border:1px solid rgba(160,175,190,.06);border-radius:12px;padding:1rem;text-align:center;">
+              <div style="font-size:1.8rem;font-weight:500;color:#5ab0e0;" id="statTotalPv">-</div>
+              <div style="font-size:.8rem;opacity:.5;letter-spacing:1px;margin-top:.3rem;">总浏览量 PV</div>
+            </div>
+            <div style="flex:1;min-width:140px;background:rgba(20,30,40,.3);border:1px solid rgba(160,175,190,.06);border-radius:12px;padding:1rem;text-align:center;">
+              <div style="font-size:1.8rem;font-weight:500;color:#5ad0a0;" id="statTotalUv">-</div>
+              <div style="font-size:.8rem;opacity:.5;letter-spacing:1px;margin-top:.3rem;">独立访客 UV</div>
+            </div>
+          </div>
+        </div>
+        <div class="card"><h2>📈 近 30 天趋势</h2><div id="statDaily"><div class="empty-state">加载中...</div></div></div>
+        <div class="card"><h2>🔥 热门页面（近 7 天）</h2><div id="statPages"><div class="empty-state">加载中...</div></div></div>
+      </div>
+
+      <!-- 备份 -->
+      <div class="tab-content" id="tab-backups" style="display:none;">
+        <div class="card">
+          <h2>💾 数据备份</h2>
+          <div style="font-size:.85rem;opacity:.6;margin-bottom:1rem;">服务器每天自动备份（保留 30 份）。也可手动备份下载 .db 文件。一键回档会把所选备份覆盖回当前数据库，回档前自动保存当前数据快照。</div>
+          <button class="btn btn-primary" onclick="backupNow()">📦 立即备份并下载</button>
+        </div>
+        <div class="card"><h2>🗂️ 已有备份</h2><div id="backupList" class="post-list"><div class="empty-state">加载中...</div></div></div>
+      </div>
+
+      <!-- 操作日志 -->
+      <div class="tab-content" id="tab-oplog" style="display:none;">
+        <div class="card"><h2>📜 操作日志（最近 100 条）</h2><div id="oplogList" class="post-list"><div class="empty-state">加载中...</div></div></div>
+      </div>
+
+    </div>
+    <div id="toast" class="toast"></div>
+  </div>
+
+  <!-- 编辑投票弹窗 -->
+  <div id="editVoteOverlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.8);backdrop-filter:blur(10px);z-index:9999;align-items:center;justify-content:center;">
+    <div style="background:rgba(16,24,32,.95);border:1px solid rgba(160,175,190,.1);border-radius:20px;padding:2.5rem;max-width:460px;width:90%;">
+      <h2 style="font-size:1.3rem;font-weight:400;letter-spacing:2px;color:#b8d0dd;margin-bottom:1.5rem;">✏️ 编辑投票</h2>
+      <div class="form-group"><label>标题</label><input type="text" id="editVoteTitle" style="width:100%;padding:0.7rem 1rem;background:rgba(20,30,40,.4);border:1px solid rgba(160,175,190,.1);border-radius:10px;color:#eef2f5;font-size:0.95rem;font-family:inherit;"></div>
+      <div class="form-group"><label>描述</label><textarea id="editVoteDesc" rows="2" style="width:100%;padding:0.7rem 1rem;background:rgba(20,30,40,.4);border:1px solid rgba(160,175,190,.1);border-radius:10px;color:#eef2f5;font-size:0.95rem;font-family:inherit;"></textarea></div>
+      <div class="form-group"><label>截止日期</label><input type="date" id="editVoteDeadline" style="width:100%;padding:0.7rem 1rem;background:rgba(20,30,40,.4);border:1px solid rgba(160,175,190,.1);border-radius:10px;color:#eef2f5;font-size:0.95rem;font-family:inherit;color-scheme:dark;"></div>
+      <div class="form-row" style="display:flex;gap:0.8rem;margin-top:1.2rem;">
+        <button onclick="closeEditVote()" style="flex:1;padding:0.7rem;border-radius:10px;border:1px solid rgba(160,175,190,.1);background:transparent;color:rgba(160,175,190,.5);cursor:pointer;font-family:inherit;font-size:0.95rem;letter-spacing:1px;">取消</button>
+        <button onclick="saveEditVote()" style="flex:1;padding:0.7rem;border-radius:10px;border:none;background:linear-gradient(135deg,#5ab0e0,#3a8aba);color:#fff;cursor:pointer;font-family:inherit;font-size:0.95rem;letter-spacing:1px;">保存修改</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ============================================================
+    // 配置 - 前端不存密码！
+    // ============================================================
+    const API_BASE = 'https://api.jssj.cc.cd';
+async function fetchApi(path, options) {
+  const resp = await fetch(API_BASE + path, options);
+  if (!resp.ok) throw new Error('HTTP ' + resp.status);
+  return resp;
+}
+
+function esc(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+
+
+    // ============================================================
+    // 密码验证 - 全部走后端
+    // ============================================================
+    const authOverlay = document.getElementById('authOverlay');
+    const authInput = document.getElementById('authInput');
+    const authBtn = document.getElementById('authBtn');
+    const authError = document.getElementById('authError');
+    const mainContent = document.getElementById('mainContent');
+
+    // 用于存储密码（仅在 sessionStorage 中，关闭标签页即销毁）
+    let adminPassword = sessionStorage.getItem('admin_pass') || '';
+
+    async function tryLogin() {
+      const password = authInput.value.trim();
+      if (!password) {
+        authError.textContent = '请输入密码';
+        return;
+      }
+
+      authBtn.disabled = true;
+      authBtn.textContent = '验证中...';
+
+      try {
+        const resp = await fetchApi('/api/auth', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password }),
+        });
+
+        const data = await resp.json();
+
+        if (data.success) {
+          adminPassword = password;
+          sessionStorage.setItem('admin_pass', password);
+          authOverlay.classList.add('hidden');
+          mainContent.style.display = 'block';
+          authError.textContent = '';
+          loadPosts();
+          loadVotes();
+        } else {
+          authError.textContent = '❌ ' + (data.error || '密码错误');
+          authInput.value = '';
+          authInput.focus();
+          sessionStorage.removeItem('admin_pass');
+        }
+      } catch (err) {
+        authError.textContent = '❌ 连接服务器失败';
+        console.error(err);
+      } finally {
+        authBtn.disabled = false;
+        authBtn.textContent = '验证身份';
+      }
+    }
+
+    authInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') tryLogin();
+    });
+    authBtn.addEventListener('click', tryLogin);
+
+    // 检查已有登录
+    if (sessionStorage.getItem('admin_pass')) {
+      adminPassword = sessionStorage.getItem('admin_pass');
+      authOverlay.classList.add('hidden');
+      mainContent.style.display = 'block';
+      loadPosts();
+      loadVotes();
+    } else {
+      authOverlay.classList.remove('hidden');
+      mainContent.style.display = 'none';
+      authInput.focus();
+    }
+
+    function logout() {
+      sessionStorage.removeItem('admin_pass');
+      adminPassword = '';
+      authOverlay.classList.remove('hidden');
+      mainContent.style.display = 'none';
+      authInput.value = '';
+      authInput.focus();
+    }
+
+    // ============================================================
+    // Toast 通知
+    // ============================================================
+    function showToast(message, type = 'success') {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.className = 'toast ' + type + ' show';
+      clearTimeout(toast._timeout);
+      toast._timeout = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3000);
+    }
+
+    // ============================================================
+    // 获取当前验证状态
+    // ============================================================
+    function getAuthToken() {
+      return adminPassword;
+    }
+
+    // ============================================================
+    // 加载投票列表
+    // ============================================================
+    async function loadVotes() {
+      const container = document.getElementById('voteList');
+      try {
+        const resp = await fetchApi('/api/votes');
+        const data = await resp.json();
+        if (!data.success || !data.votes || data.votes.length === 0) {
+          container.innerHTML = '<div class="empty-state">📭 暂无投票</div>';
+          return;
+        }
+        container.innerHTML = data.votes.map(v => {
+          const summary = v.type === 'choice' ? v.options.map(o => (o + ': ' + (v.counts?.[o] || 0))).join(' · ') : ('同意 ' + (v.yesCount ?? 0) + ' · 反对 ' + (v.noCount ?? 0));
+          const badge = v.type === 'choice' ? '<span style="font-size:.65rem;opacity:.4;letter-spacing:1px;margin-right:6px;">[选择]</span>' : '';
+          return '<div class="post-item"><div class="info"><span class="title">' + badge + esc(v.title) + '</span><span class="meta">' + esc(summary) + ' · ' + esc((v.date || '').split('T')[0]) + (v.deadline ? ' · 截止 ' + esc(v.deadline) : '') + '</span></div><div class="actions"><button class="btn btn-primary" style="padding:0.3rem 0.8rem;font-size:0.8rem;background:rgba(90,176,224,.1);border:1px solid rgba(90,176,224,.15);color:#5ab0e0;" onclick="editVote(\'' + esc(v.id) + '\')">编辑</button><button class="btn btn-danger" onclick="deleteVote(\'' + esc(v.id) + '\')">删除</button></div></div>';
+        }).join('');
+      } catch {
+        container.innerHTML = '<div class="empty-state">❌ 加载失败</div>';
+      }
+    }
+
+    // ============================================================
+    // 创建投票
+    // ============================================================
+    document.getElementById('voteForm')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const title = document.getElementById('voteTitle').value.trim();
+      const description = document.getElementById('voteDesc').value.trim();
+      const deadline = document.getElementById('voteDeadline').value || null;
+      const type = document.getElementById('voteType').value;
+      if (!title) { showToast('标题为必填项', 'error'); return; }
+      if (!adminPassword) { showToast('请先登录', 'error'); return; }
+      let options = [];
+      if (type === 'choice') {
+        options = document.getElementById('voteOptions').value.trim().split('\n').map(s => s.trim()).filter(Boolean);
+        if (options.length < 2) { showToast('至少需要2个选项', 'error'); return; }
+      }
+      try {
+        const body = { title, description, deadline, type };
+        if (type === 'choice') body.options = options;
+        const resp = await fetchApi('/api/votes', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + adminPassword },
+          body: JSON.stringify(body),
+        });
+        const data = await resp.json();
+        if (data.success) {
+          showToast('✅ 投票创建成功');
+          document.getElementById('voteForm').reset();
+          loadVotes();
+        } else {
+          showToast('❌ ' + (data.error || '创建失败'), 'error');
+          if (resp.status === 401) { sessionStorage.removeItem('admin_pass'); adminPassword = ''; logout(); }
+        }
+      } catch (err) { showToast('创建失败: ' + err.message, 'error'); }
+    });
+
+    window.deleteVote = async function(id) {
+      if (!confirm('确定要删除这个投票吗？')) return;
+      if (!adminPassword) { showToast('请先登录', 'error'); return; }
+      try {
+        const resp = await fetchApi('/api/votes/' + id, {
+          method: 'DELETE',
+          headers: { 'Authorization': 'Bearer ' + adminPassword },
+        });
+        const data = await resp.json();
+        if (data.success) { showToast('✅ 投票已删除'); loadVotes(); }
+        else { showToast('❌ ' + (data.error || '删除失败'), 'error'); if (resp.status === 401) logout(); }
+      } catch (err) { showToast('删除失败: ' + err.message, 'error'); }
+    };
+
+    let editingVoteId = null;
+
+    window.editVote = async function(id) {
+      editingVoteId = id;
+      // 从列表中找当前数据填充
+      try {
+        const resp = await fetchApi('/api/votes');
+        const data = await resp.json();
+        const vote = data.votes?.find(v => v.id === id);
+        if (vote) {
+          document.getElementById('editVoteTitle').value = vote.title || '';
+          document.getElementById('editVoteDesc').value = vote.description || '';
+          document.getElementById('editVoteDeadline').value = vote.deadline || '';
+        }
+      } catch {}
+      document.getElementById('editVoteOverlay').style.display = 'flex';
+    };
+
+    window.closeEditVote = function() {
+      document.getElementById('editVoteOverlay').style.display = 'none';
+      editingVoteId = null;
+    };
+
+    window.saveEditVote = async function() {
+      const title = document.getElementById('editVoteTitle').value.trim();
+      const description = document.getElementById('editVoteDesc').value.trim();
+      const deadline = document.getElementById('editVoteDeadline').value || null;
+      if (!title && !description && !deadline) { showToast('至少修改一项', 'error'); return; }
+      if (!adminPassword) { showToast('请先登录', 'error'); return; }
+      const body = {};
+      if (title) body.title = title;
+      if (description) body.description = description;
+      body.deadline = deadline; // 允许清空截止日期
+      try {
+        const resp = await fetchApi('/api/votes/' + editingVoteId, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + adminPassword },
+          body: JSON.stringify(body),
+        });
+        const data = await resp.json();
+        if (data.success) { showToast('✅ 投票已更新'); closeEditVote(); loadVotes(); }
+        else { showToast('❌ ' + (data.error || '更新失败'), 'error'); if (resp.status === 401) logout(); }
+      } catch (err) { showToast('更新失败: ' + err.message, 'error'); }
+    };
+
+    // ============================================================
+    // 加载帖子列表
+    // ============================================================
+    async function loadPosts() {
+      const container = document.getElementById('postList');
+      try {
+        const resp = await fetchApi('/api/posts');
+        const data = await resp.json();
+
+        if (!data.success || !data.posts || data.posts.length === 0) {
+          container.innerHTML = '<div class="empty-state">📭 暂无动态</div>';
+          return;
+        }
+
+        container.innerHTML = data.posts.map(post => `
+          <div class="post-item">
+            <div class="info">
+              <span class="title">${esc(post.title)}</span>
+              ${post.pinned ? '<span class="pin-badge">置顶</span>' : ''}
+              <span class="meta">${esc(post.author)} · ${esc(post.date)}</span>
+            </div>
+            <div class="actions">
+              <button class="btn btn-danger" onclick="deletePost('${esc(post.id)}')">删除</button>
+            </div>
+          </div>
+        `).join('');
+      } catch (err) {
+        container.innerHTML = '<div class="empty-state">❌ 加载失败</div>';
+        console.error(err);
+      }
+    }
+
+    // ============================================================
+    // 发布帖子
+    // ============================================================
+    document.getElementById('postForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const title = document.getElementById('postTitle').value.trim();
+      const author = document.getElementById('postAuthor').value.trim();
+      const excerpt = document.getElementById('postExcerpt').value.trim();
+      const content = document.getElementById('postContent').value.trim();
+      const pinned = document.getElementById('postPinned').value === 'true';
+      const images = document.getElementById('postImages').value.trim().split('\n').map(s => s.trim()).filter(s => s.startsWith('http'));
+
+      if (!title || !author) {
+        showToast('标题和发布人为必填项', 'error');
+        return;
+      }
+
+      if (!adminPassword) { showToast('请先登录', 'error'); return; }
+
+      try {
+        const resp = await fetchApi('/api/posts', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + adminPassword,
+          },
+          body: JSON.stringify({ title, author, excerpt, content, pinned, images }),
+        });
+
+        const data = await resp.json();
+        if (data.success) {
+          showToast('✅ 帖子发布成功！');
+          document.getElementById('postForm').reset();
+          loadPosts();
+        } else {
+          showToast('❌ ' + (data.error || '发布失败'), 'error');
+          if (resp.status === 401) logout();
+        }
+      } catch (err) {
+        showToast('发布失败: ' + err.message, 'error');
+      }
+    });
+
+    // ============================================================
+    // 删除帖子
+    // ============================================================
+    window.deletePost = async function(postId) {
+      if (!confirm('确定要删除这篇帖子吗？')) return;
+      if (!adminPassword) { showToast('请先登录', 'error'); return; }
+
+      try {
+        const resp = await fetchApi('/api/posts/' + postId, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': 'Bearer ' + adminPassword,
+          },
+        });
+
+        const data = await resp.json();
+        if (data.success) {
+          showToast('✅ 帖子已删除');
+          loadPosts();
+        } else {
+          showToast('❌ ' + (data.error || '删除失败'), 'error');
+          if (resp.status === 401) logout();
+        }
+      } catch (err) {
+        showToast('删除失败: ' + err.message, 'error');
+      }
+    };
+
+    // ============================================================
+    // 导出 / 导入全部数据
+    // ============================================================
+    window.exportAll = async function() {
+      if (!adminPassword) { showToast('请先登录', 'error'); return; }
+      try {
+        const resp = await fetchApi('/api/export', {
+          headers: { 'Authorization': 'Bearer ' + adminPassword },
+        });
+        if (!resp.ok) { const d = await resp.json().catch(() => ({})); showToast('导出失败: ' + (d.error || resp.status), 'error'); if (resp.status === 401) logout(); return; }
+        const blob = await resp.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'jssj-backup-' + new Date().toISOString().slice(0, 10) + '.json';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+        showToast('✅ 数据已导出');
+      } catch (err) {
+        showToast('导出失败: ' + err.message, 'error');
+      }
+    };
+
+    window.importData = async function(input) {
+      if (!adminPassword) { showToast('请先登录', 'error'); return; }
+      const file = input.files && input.files[0];
+      if (!file) return;
+      if (!confirm('确定要导入 ' + file.name + ' 吗？\n已存在的记录会按 id 覆盖更新，不会删除其他数据。')) { input.value = ''; return; }
+      try {
+        const text = await file.text();
+        const data = JSON.parse(text);
+        if (!data || (!Array.isArray(data.posts) && !Array.isArray(data.votes) && !Array.isArray(data.stories))) {
+          showToast('文件格式不正确，请使用导出的备份文件', 'error');
+          input.value = '';
+          return;
+        }
+        const resp = await fetchApi('/api/import', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + adminPassword },
+          body: JSON.stringify({ posts: data.posts || [], votes: data.votes || [], stories: data.stories || [], bans: data.bans || [], donors: data.donors || [] }),
+        });
+        const result = await resp.json();
+        if (result.success) {
+          const c = result.imported || {};
+          showToast('✅ 导入完成：动态 ' + (c.posts || 0) + ' 条 · 投票 ' + (c.votes || 0) + ' 条 · 神人榜 ' + (c.stories || 0) + ' 条');
+          loadPosts(); loadVotes(); loadStories();
+        } else {
+          showToast('❌ 导入失败: ' + (result.error || '未知错误'), 'error');
+          if (resp.status === 401) logout();
+        }
+      } catch (err) {
+        showToast('导入失败: ' + err.message, 'error');
+      }
+      input.value = '';
+    };
+
+    // ============================================================
+    // Tab 切换
+    // ============================================================
+    window.switchTab = function(name) {
+      document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
+      document.getElementById('tab-' + name).style.display = 'block';
+      document.querySelectorAll('.tab-btn').forEach(el => {
+        el.style.background = el.dataset.tab === name ? 'rgba(90,176,224,.1)' : 'transparent';
+        el.style.color = el.dataset.tab === name ? '#7bb3d9' : 'rgba(160,175,190,.5)';
+        el.style.borderColor = el.dataset.tab === name ? 'rgba(160,175,190,.1)' : 'rgba(160,175,190,.08)';
+      });
+      if (name === 'stories' && !window._storiesLoaded) { window._storiesLoaded = true; loadStories(); }
+      if (name === 'bans' && !window._bansLoaded) { window._bansLoaded = true; loadBans(); }
+      if (name === 'donors' && !window._donorsLoaded) { window._donorsLoaded = true; loadDonors(); }
+      if (name === 'downloads' && !window._downloadsLoaded) { window._downloadsLoaded = true; loadDownloads(); loadDownloadFiles(); }
+      if (name === 'images' && !window._imagesLoaded) { window._imagesLoaded = true; loadImages(); }
+      if (name === 'stats' && !window._statsLoaded) { window._statsLoaded = true; loadStats(); }
+      if (name === 'backups' && !window._backupsLoaded) { window._backupsLoaded = true; loadBackups(); }
+      if (name === 'oplog' && !window._oplogLoaded) { window._oplogLoaded = true; loadOplog(); }
+    };
+
+    // ============================================================
+    // 加载神人榜
+    // ============================================================
+    async function loadStories() {
+      const container = document.getElementById('storyList');
+      try {
+        const resp = await fetchApi('/api/stories');
+        const data = await resp.json();
+        if (!data.success || !data.stories || data.stories.length === 0) {
+          container.innerHTML = '<div class="empty-state">📭 暂无记录</div>';
+          return;
+        }
+        container.innerHTML = data.stories.map(s => {
+          const contentText = (s.content || s.text || '').replace(/<[^>]+>/g, '').slice(0, 50);
+          return `
+          <div class="post-item">
+            <div class="info">
+              <span class="title">${esc(s.title)}</span>
+              <span class="meta">${esc((s.date || '').split('T')[0])} · ${esc(contentText)}${((s.content || s.text || '').replace(/<[^>]+>/g, '').length) > 50 ? '...' : ''}</span>
+            </div>
+            <div class="actions">
+              <button class="btn btn-danger" onclick="deleteStory('${esc(s.id)}')">删除</button>
+            </div>
+          </div>
+        `;
+        }).join('');
+      } catch { container.innerHTML = '<div class="empty-state">❌ 加载失败</div>'; }
+    }
+
+    document.getElementById('storyForm')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const title = document.getElementById('storyTitle').value.trim();
+      const text = document.getElementById('storyText').value.trim();
+      const imagesRaw = document.getElementById('storyImageUrls').value.trim();
+      if (!title || !text) { showToast('标题和事件描述为必填项', 'error'); return; }
+      if (!adminPassword) { showToast('请先登录', 'error'); return; }
+      const images = imagesRaw ? imagesRaw.split('\n').map(s => s.trim()).filter(s => s.startsWith('http')) : [];
+      try {
+        const resp = await fetchApi('/api/stories', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + adminPassword },
+          body: JSON.stringify({ title, text, images }),
+        });
+        const data = await resp.json();
+        if (data.success) {
+          showToast('✅ 添加成功');
+          document.getElementById('storyForm').reset();
+          loadStories();
+        } else { showToast('❌ ' + (data.error || '失败'), 'error'); if (resp.status === 401) logout(); }
+      } catch (err) { showToast('失败: ' + err.message, 'error'); }
+    });
+
+    window.deleteStory = async function(id) {
+      if (!confirm('确定要删除这条记录吗？')) return;
+      if (!adminPassword) { showToast('请先登录', 'error'); return; }
+      try {
+        const resp = await fetchApi('/api/stories/' + id, {
+          method: 'DELETE',
+          headers: { 'Authorization': 'Bearer ' + adminPassword },
+        });
+        const data = await resp.json();
+        if (data.success) { showToast('✅ 已删除'); loadStories(); }
+        else { showToast('❌ ' + (data.error || '失败'), 'error'); if (resp.status === 401) logout(); }
+      } catch (err) { showToast('失败: ' + err.message, 'error'); }
+    };
+
+    // ============================================================
+    // 封挂榜管理
+    // ============================================================
+    async function loadBans() {
+      const container = document.getElementById('banList');
+      try {
+        const resp = await fetchApi('/api/bans');
+        const data = await resp.json();
+        if (!data.success || !data.bans || data.bans.length === 0) {
+          container.innerHTML = '<div class="empty-state">📭 暂无封禁记录</div>';
+          return;
+        }
+        container.innerHTML = data.bans.map(b => `
+          <div class="post-item">
+            <div class="info">
+              <span class="title">${esc(b.player)}</span>
+              <span class="meta">${esc(b.reason || '—')} · ${esc(b.date || '')}</span>
+            </div>
+            <div class="actions">
+              <button class="btn btn-danger" onclick="deleteBan('${esc(b.id)}')">删除</button>
+            </div>
+          </div>`).join('');
+      } catch { container.innerHTML = '<div class="empty-state">❌ 加载失败</div>'; }
+    }
+
+    document.getElementById('banForm')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const player = document.getElementById('banPlayer').value.trim();
+      const reason = document.getElementById('banReason').value.trim();
+      const date = document.getElementById('banDate').value || null;
+      if (!player) { showToast('玩家名为必填项', 'error'); return; }
+      if (!adminPassword) { showToast('请先登录', 'error'); return; }
+      try {
+        const resp = await fetchApi('/api/bans', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + adminPassword },
+          body: JSON.stringify({ player, reason, date }),
+        });
+        const data = await resp.json();
+        if (data.success) { showToast('✅ 已添加'); document.getElementById('banForm').reset(); loadBans(); }
+        else { showToast('❌ ' + (data.error || '失败'), 'error'); if (resp.status === 401) logout(); }
+      } catch (err) { showToast('失败: ' + err.message, 'error'); }
+    });
+
+    window.deleteBan = async function(id) {
+      if (!confirm('确定要删除这条封禁记录吗？')) return;
+      if (!adminPassword) { showToast('请先登录', 'error'); return; }
+      try {
+        const resp = await fetchApi('/api/bans/' + id, {
+          method: 'DELETE',
+          headers: { 'Authorization': 'Bearer ' + adminPassword },
+        });
+        const data = await resp.json();
+        if (data.success) { showToast('✅ 已删除'); loadBans(); }
+        else { showToast('❌ ' + (data.error || '失败'), 'error'); if (resp.status === 401) logout(); }
+      } catch (err) { showToast('失败: ' + err.message, 'error'); }
+    };
+
+    // ============================================================
+    // 捐赠名单管理
+    // ============================================================
+    async function loadDonors() {
+      const container = document.getElementById('donorList');
+      try {
+        const resp = await fetchApi('/api/donors');
+        const data = await resp.json();
+        if (!data.success || !data.donors || data.donors.length === 0) {
+          container.innerHTML = '<div class="empty-state">📭 暂无捐赠记录</div>';
+          return;
+        }
+        container.innerHTML = data.donors.map(d => `
+          <div class="post-item">
+            <div class="info">
+              <span class="title">${esc(d.name)}</span>
+            </div>
+            <div class="actions">
+              <button class="btn btn-danger" onclick="deleteDonor('${esc(d.id)}')">删除</button>
+            </div>
+          </div>`).join('');
+      } catch { container.innerHTML = '<div class="empty-state">❌ 加载失败</div>'; }
+    }
+
+    document.getElementById('donorForm')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('donorName').value.trim();
+      if (!name) { showToast('名字为必填项', 'error'); return; }
+      if (!adminPassword) { showToast('请先登录', 'error'); return; }
+      try {
+        const resp = await fetchApi('/api/donors', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + adminPassword },
+          body: JSON.stringify({ name }),
+        });
+        const data = await resp.json();
+        if (data.success) { showToast('✅ 已添加'); document.getElementById('donorForm').reset(); loadDonors(); }
+        else { showToast('❌ ' + (data.error || '失败'), 'error'); if (resp.status === 401) logout(); }
+      } catch (err) { showToast('失败: ' + err.message, 'error'); }
+    });
+
+    window.deleteDonor = async function(id) {
+      if (!confirm('确定要删除这条捐赠记录吗？')) return;
+      if (!adminPassword) { showToast('请先登录', 'error'); return; }
+      try {
+        const resp = await fetchApi('/api/donors/' + id, {
+          method: 'DELETE',
+          headers: { 'Authorization': 'Bearer ' + adminPassword },
+        });
+        const data = await resp.json();
+        if (data.success) { showToast('✅ 已删除'); loadDonors(); }
+        else { showToast('❌ ' + (data.error || '失败'), 'error'); if (resp.status === 401) logout(); }
+      } catch (err) { showToast('失败: ' + err.message, 'error'); }
+    };
+
+    // ============================================================
+    // 下载中心管理
+    // ============================================================
+    async function loadDownloads() {
+      const container = document.getElementById('downloadList');
+      try {
+        const resp = await fetchApi('/api/downloads');
+        const data = await resp.json();
+        if (!data.success || !data.downloads || data.downloads.length === 0) {
+          container.innerHTML = '<div class="empty-state">📭 暂无下载项</div>';
+          return;
+        }
+        container.innerHTML = data.downloads.map(d => {
+          const dlUrl = d.url && d.url.startsWith('/') ? API_BASE + d.url : d.url;
+          return `
+          <div class="post-item">
+            <div class="info">
+              <span class="title">${esc(d.name)}</span>
+              <span class="meta">${d.size ? esc(d.size) + ' · ' : ''}${esc((d.desc || '').slice(0, 30))}${(d.desc || '').length > 30 ? '...' : ''}${d.date ? ' · ' + esc((d.date || '').slice(0, 10)) : ''}</span>
+            </div>
+            <div class="actions">
+              <a href="${esc(dlUrl)}" target="_blank" rel="noopener" style="padding:0.3rem 0.8rem;font-size:0.8rem;border-radius:10px;border:1px solid rgba(90,176,224,.2);background:rgba(90,176,224,.08);color:#5ab0e0;text-decoration:none;font-family:inherit;">打开链接</a>
+              <button class="btn btn-danger" onclick="deleteDownload('${esc(d.id)}')">删除</button>
+            </div>
+          </div>`;
+        }).join('');
+      } catch { container.innerHTML = '<div class="empty-state">❌ 加载失败</div>'; }
+    }
+
+    document.getElementById('downloadForm')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('downloadName').value.trim();
+      let size = document.getElementById('downloadSize').value.trim();
+      const desc = document.getElementById('downloadDesc').value.trim();
+      const file = document.getElementById('downloadFile').files[0];
+      const manualUrl = document.getElementById('downloadUrl').value.trim();
+      if (!name) { showToast('名称为必填项', 'error'); return; }
+      if (!adminPassword) { showToast('请先登录', 'error'); return; }
+      const btn = document.getElementById('downloadSubmitBtn');
+      btn.disabled = true;
+      btn.textContent = '上传中...';
+      const progressBox = document.getElementById('downloadProgressBox');
+      const progressBar = document.getElementById('downloadProgressBar');
+      const progressText = document.getElementById('downloadProgressText');
+      const progressSpeed = document.getElementById('downloadProgressSpeed');
+      try {
+        let url = manualUrl;
+        let origName = '';
+        if (file) {
+          const upResp = await uploadWithProgress(file);
+          const data = await upResp.json();
+          if (!data.success) throw new Error(data.error || '上传失败');
+          url = data.url;
+          origName = data.origName || file.name;
+          if (!size) size = formatFileSize(data.size);
+        }
+        progressBox.style.display = 'none';
+        if (!url) { showToast('请上传文件或填写外部链接', 'error'); btn.disabled = false; btn.textContent = '上传并添加'; return; }
+        const createResp = await fetchApi('/api/downloads', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + adminPassword },
+          body: JSON.stringify({ name, url, size, desc, filename: origName }),
+        });
+        const createData = await createResp.json();
+        if (createData.success) { showToast('✅ 已添加'); document.getElementById('downloadForm').reset(); loadDownloads(); loadDownloadFiles(); }
+        else { showToast('❌ ' + (createData.error || '失败'), 'error'); if (createResp.status === 401) logout(); }
+      } catch (err) { showToast('失败: ' + err.message, 'error'); }
+      btn.disabled = false;
+      btn.textContent = '上传并添加';
+    });
+
+    function uploadWithProgress(file) {
+      return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        const box = document.getElementById('downloadProgressBox');
+        const bar = document.getElementById('downloadProgressBar');
+        const txt = document.getElementById('downloadProgressText');
+        const speedEl = document.getElementById('downloadProgressSpeed');
+        box.style.display = 'block';
+        bar.style.width = '0%';
+        txt.textContent = '0%';
+        speedEl.textContent = '';
+        const total = file.size || 0;
+        let lastLoaded = 0;
+        let lastTime = Date.now();
+        let curSpeed = 0;
+        xhr.upload.onprogress = (e) => {
+          if (e.lengthComputable && total > 0) {
+            const now = Date.now();
+            const dt = (now - lastTime) / 1000;
+            if (dt > 0.5) {
+              curSpeed = (e.loaded - lastLoaded) / dt;
+              lastLoaded = e.loaded;
+              lastTime = now;
+            }
+            const pct = Math.round(e.loaded / total * 100);
+            bar.style.width = pct + '%';
+            txt.textContent = pct + '%';
+            if (curSpeed > 0) {
+              const remain = (total - e.loaded) / curSpeed;
+              speedEl.textContent = formatFileSize(curSpeed) + '/s · 剩余 ' + (remain > 60 ? Math.round(remain / 60) + ' 分钟' : Math.ceil(remain) + ' 秒');
+            }
+          }
+        };
+        xhr.onload = () => {
+          if (xhr.status >= 200 && xhr.status < 300) {
+            resolve({ ok: true, status: xhr.status, json: () => Promise.resolve(JSON.parse(xhr.responseText || '{}')) });
+          } else {
+            reject(new Error('HTTP ' + xhr.status + (xhr.responseText ? ' · ' + (JSON.parse(xhr.responseText).error || '') : '')));
+          }
+        };
+        xhr.onerror = () => reject(new Error('Failed to fetch'));
+        xhr.onabort = () => reject(new Error('上传已取消'));
+        xhr.open('POST', API_BASE + '/api/downloads/upload');
+        xhr.setRequestHeader('Authorization', 'Bearer ' + adminPassword);
+        xhr.setRequestHeader('Content-Type', 'application/octet-stream');
+        xhr.setRequestHeader('X-Filename', encodeURIComponent(file.name));
+        xhr.send(file);
+      });
+    }
+
+    window.deleteDownload = async function(id) {
+      if (!confirm('确定要删除这个下载项吗？')) return;
+      if (!adminPassword) { showToast('请先登录', 'error'); return; }
+      try {
+        const resp = await fetchApi('/api/downloads/' + id, {
+          method: 'DELETE',
+          headers: { 'Authorization': 'Bearer ' + adminPassword },
+        });
+        const data = await resp.json();
+        if (data.success) { showToast('✅ 已删除'); loadDownloads(); }
+        else { showToast('❌ ' + (data.error || '失败'), 'error'); if (resp.status === 401) logout(); }
+      } catch (err) { showToast('失败: ' + err.message, 'error'); }
+    };
+
+    function formatFileSize(bytes) {
+      if (bytes == null || isNaN(bytes)) return '';
+      const b = Number(bytes);
+      if (b < 1024) return b + ' B';
+      if (b < 1024 * 1024) return (b / 1024).toFixed(1) + ' KB';
+      if (b < 1024 * 1024 * 1024) return (b / (1024 * 1024)).toFixed(1) + ' MB';
+      return (b / (1024 * 1024 * 1024)).toFixed(2) + ' GB';
+    }
+
+    async function loadDownloadFiles() {
+      const container = document.getElementById('downloadFileList');
+      try {
+        const resp = await fetchApi('/api/downloads/files', { headers: { 'Authorization': 'Bearer ' + adminPassword } });
+        const data = await resp.json();
+        if (!data.success || !data.files || data.files.length === 0) {
+          container.innerHTML = '<div class="empty-state">📭 暂无上传文件</div>';
+          return;
+        }
+        container.innerHTML = data.files.map(f => `
+          <div class="post-item" style="align-items:center;">
+            <div class="info">
+              <span class="title" style="font-size:.85rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:240px;">${esc(f.filename)}</span>
+              <span class="meta">${esc(formatFileSize(f.size))}</span>
+            </div>
+            <div class="actions">
+              <a href="${esc(fileUrl(f.url))}" target="_blank" rel="noopener" style="padding:0.3rem 0.8rem;font-size:0.8rem;border-radius:10px;border:1px solid rgba(90,176,224,.2);background:rgba(90,176,224,.08);color:#5ab0e0;text-decoration:none;font-family:inherit;">打开</a>
+              <button class="btn btn-danger" onclick="deleteDownloadFile('${esc(f.filename)}')">删除</button>
+            </div>
+          </div>`).join('');
+      } catch { container.innerHTML = '<div class="empty-state">❌ 加载失败</div>'; }
+    }
+
+    window.deleteDownloadFile = async function(filename) {
+      if (!confirm('确定要删除这个已上传文件吗？引用它的下载项会失效。')) return;
+      if (!adminPassword) { showToast('请先登录', 'error'); return; }
+      try {
+        const resp = await fetchApi('/api/downloads/file/' + encodeURIComponent(filename), {
+          method: 'DELETE',
+          headers: { 'Authorization': 'Bearer ' + adminPassword },
+        });
+        const data = await resp.json();
+        if (data.success) { showToast('✅ 已删除'); loadDownloadFiles(); }
+        else { showToast('❌ ' + (data.error || '失败'), 'error'); if (resp.status === 401) logout(); }
+      } catch (err) { showToast('失败: ' + err.message, 'error'); }
+    };
+
+    // ============================================================
+    // 图床管理
+    // ============================================================
+    document.getElementById('uploadForm')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const files = document.getElementById('uploadFile').files;
+      if (!files || files.length === 0) { showToast('请选择图片', 'error'); return; }
+      if (!adminPassword) { showToast('请先登录', 'error'); return; }
+      const btn = document.getElementById('uploadBtn');
+      btn.disabled = true;
+      btn.textContent = '上传中 (' + files.length + ' 张)...';
+      const resultBox = document.getElementById('uploadResult');
+      resultBox.innerHTML = '';
+      let ok = 0, fail = 0;
+
+      const uploadOne = (file) => new Promise((resolve) => {
+        if (file.size > 20 * 1024 * 1024) {
+          fail++;
+          resultBox.insertAdjacentHTML('beforeend', `<div style="color:#e06060;font-size:.85rem;display:flex;gap:6px;"><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">❌ ${file.name} 超过 20MB</span></div>`);
+          return resolve();
+        }
+        const reader = new FileReader();
+        reader.onload = async () => {
+          try {
+            const resp = await fetchApi('/api/upload', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + adminPassword },
+              body: JSON.stringify({ data: reader.result }),
+            });
+            const data = await resp.json();
+            if (data.success) {
+              ok++;
+              resultBox.insertAdjacentHTML('beforeend', `<div style="display:flex;align-items:center;gap:6px;font-size:.85rem;color:#5ad0a0;min-width:0;"><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">✅ ${file.name}</span><button onclick="copyImageUrl('${data.url}')" style="flex-shrink:0;padding:0.15rem 0.6rem;border-radius:6px;border:1px solid rgba(90,176,224,.2);background:rgba(90,176,224,.08);color:#5ab0e0;cursor:pointer;font-size:.7rem;font-family:inherit;">复制链接</button></div>`);
+            } else {
+              fail++;
+              resultBox.insertAdjacentHTML('beforeend', `<div style="color:#e06060;font-size:.85rem;display:flex;gap:6px;"><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">❌ ${file.name}: ${data.error || '失败'}</span></div>`);
+              if (resp.status === 401) logout();
+            }
+          } catch (err) {
+            fail++;
+            resultBox.insertAdjacentHTML('beforeend', `<div style="color:#e06060;font-size:.85rem;display:flex;gap:6px;"><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">❌ ${file.name}: ${err.message}</span></div>`);
+          }
+          resolve();
+        };
+        reader.readAsDataURL(file);
+      });
+
+      for (const file of files) { await uploadOne(file); }
+
+      btn.disabled = false;
+      btn.textContent = '上传图片';
+      if (ok > 0) { showToast('✅ 成功 ' + ok + ' 张' + (fail ? '，失败 ' + fail + ' 张' : '')); loadImages(); }
+      else if (fail > 0) showToast('全部上传失败', 'error');
+    });
+
+    async function loadImages() {
+      const container = document.getElementById('imageList');
+      try {
+        const resp = await fetchApi('/api/images', { headers: { 'Authorization': 'Bearer ' + adminPassword } });
+        const data = await resp.json();
+        if (!data.success || !data.images || data.images.length === 0) {
+          container.innerHTML = '<div class="empty-state">📭 暂无图片</div>';
+          return;
+        }
+        container.innerHTML = data.images.map(im => `
+          <div class="post-item" style="align-items:center;">
+            <div style="display:flex;align-items:center;gap:0.8rem;min-width:0;">
+              <img src="${esc(fileUrl(im.url))}" style="width:64px;height:64px;object-fit:cover;border-radius:8px;background:rgba(255,255,255,.05);flex-shrink:0;cursor:zoom-in;" loading="lazy" title="点击查看原图" onclick="window.open('${esc(fileUrl(im.url))}','_blank')">
+              <div style="min-width:0;">
+                <div style="font-size:0.75rem;color:rgba(160,175,190,.5);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:180px;">${esc(im.filename)}</div>
+                <button onclick="copyImageUrl('${esc(im.url)}')" style="margin-top:0.2rem;padding:0.2rem 0.7rem;border-radius:6px;border:1px solid rgba(90,176,224,.2);background:rgba(90,176,224,.08);color:#5ab0e0;cursor:pointer;font-size:0.75rem;font-family:inherit;">复制链接</button>
+              </div>
+            </div>
+            <div class="actions">
+              <button class="btn btn-danger" onclick="deleteImage('${esc(im.filename)}')">删除</button>
+            </div>
+          </div>`).join('');
+      } catch { container.innerHTML = '<div class="empty-state">❌ 加载失败</div>'; }
+    }
+
+    window.copyImageUrl = function(relUrl) {
+      const full = fileUrl(relUrl);
+      if (navigator.clipboard) { navigator.clipboard.writeText(full).then(() => showToast('✅ 已复制链接')).catch(() => { prompt('复制链接：', full); }); }
+      else { prompt('复制链接：', full); }
+    };
+
+    window.deleteImage = async function(filename) {
+      if (!confirm('确定要删除这张图片吗？引用它的页面会显示裂图。')) return;
+      if (!adminPassword) { showToast('请先登录', 'error'); return; }
+      try {
+        const resp = await fetchApi('/api/images/' + encodeURIComponent(filename), {
+          method: 'DELETE',
+          headers: { 'Authorization': 'Bearer ' + adminPassword },
+        });
+        const data = await resp.json();
+        if (data.success) { showToast('✅ 已删除'); loadImages(); }
+        else { showToast('❌ ' + (data.error || '失败'), 'error'); if (resp.status === 401) logout(); }
+      } catch (err) { showToast('失败: ' + err.message, 'error'); }
+    };
+
+    // ============================================================
+    // 流量统计
+    // ============================================================
+    async function loadStats() {
+      try {
+        const resp = await fetchApi('/api/stats', { headers: { 'Authorization': 'Bearer ' + adminPassword } });
+        const data = await resp.json();
+        if (!data.success) { showToast('❌ 加载失败', 'error'); if (resp.status === 401) logout(); return; }
+        document.getElementById('statTotalPv').textContent = data.total ? data.total.pv : 0;
+        document.getElementById('statTotalUv').textContent = data.total ? data.total.uv : 0;
+
+        const daily = data.daily || [];
+        document.getElementById('statDaily').innerHTML = daily.length ? daily.map(d => `
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:.4rem .6rem;border-radius:8px;background:rgba(200,215,230,.02);border:1px solid rgba(160,175,190,.04);margin-bottom:.3rem;font-size:.9rem;">
+            <span style="color:#c8dce6;">${d.day}</span>
+            <span style="opacity:.6;">PV ${d.pv} · UV ${d.uv}</span>
+          </div>`).join('') : '<div class="empty-state">暂无数据</div>';
+
+        const pages = data.pages || [];
+        document.getElementById('statPages').innerHTML = pages.length ? pages.map((p, i) => `
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:.4rem .6rem;border-radius:8px;background:rgba(200,215,230,.02);border:1px solid rgba(160,175,190,.04);margin-bottom:.3rem;font-size:.9rem;">
+            <span style="color:#c8dce6;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:60%;">${i + 1}. ${p.page || '/'}</span>
+            <span style="opacity:.6;">${p.cnt} 次</span>
+          </div>`).join('') : '<div class="empty-state">暂无数据</div>';
+      } catch { document.getElementById('statDaily').innerHTML = '<div class="empty-state">❌ 加载失败</div>'; }
+    }
+
+    // ============================================================
+    // 备份
+    // ============================================================
+    async function loadBackups() {
+      const container = document.getElementById('backupList');
+      try {
+        const resp = await fetchApi('/api/backups', { headers: { 'Authorization': 'Bearer ' + adminPassword } });
+        const data = await resp.json();
+        if (!data.success || !data.backups || data.backups.length === 0) {
+          container.innerHTML = '<div class="empty-state">📭 暂无备份</div>';
+          return;
+        }
+        container.innerHTML = data.backups.map(b => `
+          <div class="post-item">
+            <div class="info"><span class="title" style="font-size:.85rem;">${b.name}</span><span class="meta">${(b.size / 1024).toFixed(1)} KB · ${(b.mtime || '').replace('T', ' ').slice(0, 19)}</span></div>
+            <div class="actions">
+              <button class="btn btn-primary" style="padding:0.3rem 0.8rem;font-size:0.8rem;background:rgba(224,176,90,.12);border:1px solid rgba(224,176,90,.25);color:#e0b05a;" onclick="restoreBackup('${b.name}')">↩ 一键回档</button>
+            </div>
+          </div>`).join('');
+      } catch { container.innerHTML = '<div class="empty-state">❌ 加载失败</div>'; }
+    }
+
+    window.restoreBackup = async function(name) {
+      if (!confirm('确定回档到该备份吗？\n\n' + name + '\n\n⚠️ 回档会覆盖当前所有数据！回档前会自动把当前数据存为快照。')) return;
+      if (!adminPassword) { showToast('请先登录', 'error'); return; }
+      try {
+        const resp = await fetchApi('/api/backup/restore', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + adminPassword },
+          body: JSON.stringify({ name }),
+        });
+        const data = await resp.json();
+        if (data.success) {
+          showToast('✅ ' + (data.message || '回档成功'));
+          loadBackups();
+        } else { showToast('❌ ' + (data.error || '回档失败'), 'error'); if (resp.status === 401) logout(); }
+      } catch (err) { showToast('回档失败: ' + err.message, 'error'); }
+    };
+
+    window.backupNow = async function() {
+      if (!adminPassword) { showToast('请先登录', 'error'); return; }
+      try {
+        const resp = await fetchApi('/api/backup', { headers: { 'Authorization': 'Bearer ' + adminPassword } });
+        if (!resp.ok) { showToast('备份失败', 'error'); return; }
+        const blob = await resp.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        const cd = resp.headers.get('Content-Disposition') || '';
+        const m = cd.match(/filename="?([^";]+)/);
+        a.download = m ? m[1] : 'backup.db';
+        document.body.appendChild(a); a.click(); a.remove();
+        URL.revokeObjectURL(url);
+        showToast('✅ 备份完成并已下载');
+        loadBackups();
+      } catch (err) { showToast('备份失败: ' + err.message, 'error'); }
+    };
+
+    // ============================================================
+    // 操作日志
+    // ============================================================
+    async function loadOplog() {
+      const container = document.getElementById('oplogList');
+      try {
+        const resp = await fetchApi('/api/oplog', { headers: { 'Authorization': 'Bearer ' + adminPassword } });
+        const data = await resp.json();
+        if (!data.success || !data.logs || data.logs.length === 0) {
+          container.innerHTML = '<div class="empty-state">📭 暂无操作记录</div>';
+          return;
+        }
+        container.innerHTML = data.logs.map(l => `
+          <div class="post-item">
+            <div class="info"><span class="title" style="font-size:.85rem;color:#5ab0e0;">${esc(l.action)}</span><span class="meta" style="word-break:break-all;">${esc(l.detail || '')}</span></div>
+            <span class="meta" style="flex-shrink:0;">${esc((l.t || '').replace('T', ' ').slice(0, 19))}</span>
+          </div>`).join('');
+      } catch { container.innerHTML = '<div class="empty-state">❌ 加载失败</div>'; }
+    }
+  </script>
+</body>
+</html>

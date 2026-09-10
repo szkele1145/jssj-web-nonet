@@ -1,0 +1,6 @@
+# 构建/调试产物不入库（可随时用脚本重新生成）
+_build/dump.json
+_build/dumps/
+_build/access.log
+_build/*.log
+node_modules/
