@@ -161,8 +161,30 @@ node _build/update.js D:\其他库.db     # 也可以指定
 
 ```bash
 node _build/deploy-pages.js       # 建仓库（若不存在）+ 推送 + 开启 Pages + 等待构建
-node _build/publish-release.js    # 拉取大文件并上传到 GitHub Release，再回填链接
+node _build/publish-release.js --from "C:\Users\一只屑\Desktop"   # 上传大文件到 GitHub Release
 ```
+
+**关于下载中心的大文件**（两个整合包，共 106 MB）：
+站点本身**不含**这两个文件，下载页链接指向 GitHub Release：
+
+| 页面显示名（来自数据库） | Release 资源名 |
+|---|---|
+| 建设世界通用整合包2.0（wk制作） | `JSSJ-modpack-2.0.zip` |
+| 生电整合包（用户制作） | `JSSJ-shengdian-modpack.zip` |
+
+> ⚠️ **GitHub 会把 Release 资源名里的非 ASCII 字符清理掉**（`建设世界通用整合包2.0.zip`
+> 会被存成 `2.0.zip`，改名的 API 也无效），所以资源名必须用英文。
+> 页面上的中文名不受影响（那是数据库里的 `name` 字段）。
+> 想改资源名：编辑 `_build/release-config.json` 的 `assetNames`，再跑 publish 脚本（旧资源会自动改名复用）。
+
+`publish-release.js` 的用法：
+- `--from <文件夹>`：从本地文件夹**认领**已下好的 zip（按文件名 / `dl_xxx` 原名 / 大小三重匹配），跳过下载直接上传
+- 传 GitHub 走代理时（Node 需要显式开启）：
+  ```powershell
+  $env:NODE_USE_ENV_PROXY='1'; $env:HTTPS_PROXY='http://127.0.0.1:7888'
+  $env:NO_PROXY='api.jssj.cc.cd,127.0.0.1,localhost'   # 源站直连，不走梯子
+  ```
+- 上传中途报 `fetch failed` 不代表失败：脚本会回查服务端资源是否已建成，并把**真实资源地址**回填到 `release-config.json`
 
 ### 全部脚本
 
