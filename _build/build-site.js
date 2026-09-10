@@ -89,6 +89,9 @@ const SERVER_JS_PATCH = [
 // ------------------------------------------------------------
 const IMG_RE = /(?:src|href)="(https?:\/\/[^"]+\.(?:png|jpe?g|gif|webp|bmp|ico)(?:\?[^"]*)?)"/gi;
 
+// 读 JSON 时去掉可能的 BOM（被 PowerShell 写过的文件会带 BOM）
+const readJson = (file) => JSON.parse(fs.readFileSync(file, 'utf8').replace(/^\uFEFF/, ''));
+
 function findImageUrls(html) {
   const set = new Set();
   let m;
@@ -154,7 +157,7 @@ async function main() {
   for (const d of [ASSETS, path.join(OUT, 'offline'), path.join(OUT, 'db'), path.join(OUT, 'lib')]) fs.mkdirSync(d, { recursive: true });
 
   const mapPath = path.join(OUT, 'offline/asset-map.json');
-  const assetMap = fs.existsSync(mapPath) ? JSON.parse(fs.readFileSync(mapPath, 'utf8')) : {};
+  const assetMap = fs.existsSync(mapPath) ? readJson(mapPath) : {};
   console.log('  已有资源映射 ' + Object.keys(assetMap).length + ' 条');
 
   console.log('=== 2. 处理页面 ===');
@@ -214,10 +217,11 @@ async function main() {
   console.log('  ✓ offline/asset-map.js（' + Object.keys(assetMap).length + ' 条映射，构建于 ' + builtAt + '）');
 
   // ---- 下载项 → GitHub Release 资源链接 ----
+  // tag 为空表示「暂时不发布 Release」：下载项会回落到线上服务器地址
   const relCfgPath = path.join(OUT, '_build/release-config.json');
   const relCfgDefault = { repo: 'szkele1145/jssj-web-nonet', tag: 'offline-v1', releaseBase: '' };
   let relCfg = Object.assign({}, relCfgDefault);
-  if (fs.existsSync(relCfgPath)) Object.assign(relCfg, JSON.parse(fs.readFileSync(relCfgPath, 'utf8')));
+  if (fs.existsSync(relCfgPath)) Object.assign(relCfg, readJson(relCfgPath));
   else fs.writeFileSync(relCfgPath, JSON.stringify(relCfgDefault, null, 2));
   const releaseBase = relCfg.releaseBase ||
     (relCfg.repo && relCfg.tag ? 'https://github.com/' + relCfg.repo + '/releases/download/' + relCfg.tag + '/' : '');

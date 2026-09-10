@@ -10,8 +10,9 @@ const { execFileSync, spawnSync } = require('child_process');
 
 const ROOT = 'C:/Users/一只屑/Desktop/建设世界/离线版';
 const EDGE = 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe';
-const BASE = 'http://127.0.0.1:8123';
-const OUT = path.join(ROOT, '_build/dumps');
+const LIVE_BASE = process.argv[2] || '';
+const BASE = LIVE_BASE || 'http://127.0.0.1:8123';
+const OUT = path.join(ROOT, '_build', LIVE_BASE ? 'dumps-live' : 'dumps');
 fs.mkdirSync(OUT, { recursive: true });
 const profile = path.join(os.tmpdir(), 'edge-offline-' + Math.random().toString(36).slice(2, 10));
 
